@@ -1,0 +1,547 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id   Int    @id @default(autoincrement())
+  buck Int    @default(0)
+  User User[]
+}
+
+model ChatAssistant {
+  id           Int          @id @default(autoincrement())
+  key          String
+  name         String
+  instructions String       @db.Text
+  createdAt    DateTime     @default(now())
+  description  String       @db.Text
+  imageId      Int?
+  Image        Image?       @relation(fields: [imageId], references: [id])
+  ChatThread   ChatThread[]
+
+  @@index([imageId], map: "ChatAssistant_imageId_fkey")
+}
+
+model ChatMessage {
+  id           Int                    @id @default(autoincrement())
+  chatThreadId Int
+  sender       ChatMessage_sender
+  message      String                 @db.Text
+  createdAt    DateTime               @default(now())
+  key          String?
+  runKey       String?
+  runStatus    ChatMessage_runStatus?
+  ChatThread   ChatThread             @relation(fields: [chatThreadId], references: [id])
+
+  @@index([chatThreadId], map: "ChatMessage_chatThreadId_fkey")
+}
+
+model ChatThread {
+  id              Int           @id @default(autoincrement())
+  key             String
+  userId          Int
+  createdAt       DateTime      @default(now())
+  chatAssistantId Int
+  ChatMessage     ChatMessage[]
+  ChatAssistant   ChatAssistant @relation(fields: [chatAssistantId], references: [id])
+  User            User          @relation(fields: [userId], references: [id])
+
+  @@index([chatAssistantId], map: "ChatThread_chatAssistantId_fkey")
+  @@index([userId], map: "ChatThread_userId_fkey")
+}
+
+model GenerateImage {
+  id                                                      Int                        @id @default(autoincrement())
+  generateServerId                                        Int?
+  createAt                                                DateTime                   @default(now())
+  startedAt                                               DateTime?
+  endedAt                                                 DateTime?
+  modelVersionId                                          Int
+  vaeId                                                   Int?
+  type                                                    GenerateImage_type
+  sampler                                                 String
+  positive                                                String                     @db.Text
+  negative                                                String                     @db.Text
+  width                                                   Int                        @default(512)
+  height                                                  Int                        @default(512)
+  steps                                                   Int                        @default(25)
+  seed                                                    Int                        @default(-1)
+  clipSkip                                                Int                        @default(2)
+  cfgScale                                                Float                      @default(7)
+  batchCount                                              Int                        @default(1)
+  userId                                                  Int
+  state                                                   GenerateImage_state        @default(READY)
+  ImageReferenceId                                        Int?
+  denoising                                               Float                      @default(0)
+  concept                                                 String?                    @db.Text
+  gpuPriority                                             GenerateImage_gpuPriority?
+  upscale                                                 Json?
+  controlnetId                                            Int?
+  Image_GenerateImage_ImageReferenceIdToImage             Image?                     @relation("GenerateImage_ImageReferenceIdToImage", fields: [ImageReferenceId], references: [id])
+  GeneratedControlnet                                     GeneratedControlnet?       @relation(fields: [controlnetId], references: [id])
+  GenerateServer                                          GenerateServer?            @relation(fields: [generateServerId], references: [id])
+  ModelVersion_GenerateImage_modelVersionIdToModelVersion ModelVersion               @relation("GenerateImage_modelVersionIdToModelVersion", fields: [modelVersionId], references: [id])
+  User                                                    User                       @relation(fields: [userId], references: [id])
+  ModelVersion_GenerateImage_vaeIdToModelVersion          ModelVersion?              @relation("GenerateImage_vaeIdToModelVersion", fields: [vaeId], references: [id])
+  GenerateImageAdditional                                 GenerateImageAdditional[]
+  Image_Image_generateImageIdToGenerateImage              Image[]                    @relation("Image_generateImageIdToGenerateImage")
+
+  @@index([ImageReferenceId], map: "GenerateImage_ImageReferenceId_fkey")
+  @@index([controlnetId], map: "GenerateImage_controlnetId_fkey")
+  @@index([generateServerId], map: "GenerateImage_generateServerId_fkey")
+  @@index([modelVersionId], map: "GenerateImage_modelVersionId_fkey")
+  @@index([userId], map: "GenerateImage_userId_fkey")
+  @@index([vaeId], map: "GenerateImage_vaeId_fkey")
+}
+
+model GenerateImageAdditional {
+  generateImageId Int
+  modelVersionId  Int
+  GenerateImage   GenerateImage @relation(fields: [generateImageId], references: [id])
+  ModelVersion    ModelVersion  @relation(fields: [modelVersionId], references: [id])
+
+  @@id([generateImageId, modelVersionId])
+  @@index([modelVersionId], map: "GenerateImageAdditional_modelVersionId_fkey")
+}
+
+model GenerateServer {
+  id            Int                 @id @default(autoincrement())
+  isActivate    Boolean             @default(false)
+  connectId     String?
+  authKey       String
+  type          GenerateServer_type
+  GenerateImage GenerateImage[]
+}
+
+model GeneratedControlnet {
+  id             Int             @id @default(autoincrement())
+  model          String
+  weight         Float           @default(1)
+  resize_mode    Int             @default(0)
+  lowvram        Boolean         @default(false)
+  processor_res  Int             @default(64)
+  threshold_a    Float           @default(64)
+  threshold_b    Float           @default(64)
+  guidance_start Float           @default(0)
+  guidance_end   Float           @default(1)
+  control_mode   Int             @default(0)
+  inputImageId   Int
+  module         String          @default("none")
+  GenerateImage  GenerateImage[]
+  Image          Image           @relation(fields: [inputImageId], references: [id])
+
+  @@index([inputImageId], map: "GeneratedControlnet_inputImageId_fkey")
+}
+
+model GeneratedControlnetTemplate {
+  id                                                        Int    @id @default(autoincrement())
+  skeletonImageId                                           Int
+  referenceImageId                                          Int?
+  Image_GeneratedControlnetTemplate_referenceImageIdToImage Image? @relation("GeneratedControlnetTemplate_referenceImageIdToImage", fields: [referenceImageId], references: [id])
+  Image_GeneratedControlnetTemplate_skeletonImageIdToImage  Image  @relation("GeneratedControlnetTemplate_skeletonImageIdToImage", fields: [skeletonImageId], references: [id])
+
+  @@index([referenceImageId], map: "GeneratedControlnetTemplate_referenceImageId_fkey")
+  @@index([skeletonImageId], map: "GeneratedControlnetTemplate_skeletonImageId_fkey")
+}
+
+model Image {
+  id                                                                              Int                           @id @default(autoincrement())
+  name                                                                            String?
+  url                                                                             String
+  userId                                                                          Int
+  creatdeAt                                                                       DateTime                      @default(now())
+  updatedAt                                                                       DateTime
+  meta                                                                            String?                       @db.VarChar(3000)
+  hash                                                                            String?
+  height                                                                          Int?
+  width                                                                           Int?
+  nsfw                                                                            Image_nsfw                    @default(None)
+  tosViolation                                                                    Boolean                       @default(false)
+  mimeType                                                                        String?
+  sizeKB                                                                          Int?
+  postId                                                                          Int?
+  index                                                                           Int?
+  uploadSuccess                                                                   Boolean                       @default(false)
+  generateImageId                                                                 Int?
+  mediaType                                                                       Image_mediaType               @default(image)
+  sourceType                                                                      Image_sourceType              @default(post)
+  ChatAssistant                                                                   ChatAssistant[]
+  GenerateImage_GenerateImage_ImageReferenceIdToImage                             GenerateImage[]               @relation("GenerateImage_ImageReferenceIdToImage")
+  GeneratedControlnet                                                             GeneratedControlnet[]
+  GeneratedControlnetTemplate_GeneratedControlnetTemplate_referenceImageIdToImage GeneratedControlnetTemplate[] @relation("GeneratedControlnetTemplate_referenceImageIdToImage")
+  GeneratedControlnetTemplate_GeneratedControlnetTemplate_skeletonImageIdToImage  GeneratedControlnetTemplate[] @relation("GeneratedControlnetTemplate_skeletonImageIdToImage")
+  GenerateImage_Image_generateImageIdToGenerateImage                              GenerateImage?                @relation("Image_generateImageIdToGenerateImage", fields: [generateImageId], references: [id])
+  Post                                                                            Post?                         @relation(fields: [postId], references: [id])
+  User                                                                            User                          @relation(fields: [userId], references: [id])
+  ImageTag                                                                        ImageTag[]
+  Model                                                                           Model[]
+
+  @@index([generateImageId], map: "Image_generateImageId_fkey")
+  @@index([postId], map: "Image_postId_fkey")
+  @@index([userId], map: "Image_userId_fkey")
+}
+
+model ImageTag {
+  imageId Int
+  tagId   Int
+  source  ImageTag_source
+  score   Int             @default(0)
+  Image   Image           @relation(fields: [imageId], references: [id])
+  Tag     Tag             @relation(fields: [tagId], references: [id])
+
+  @@id([imageId, tagId])
+  @@index([tagId], map: "ImageTag_tagId_fkey")
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  level     String
+  message   String   @db.Text
+  timestamp DateTime @default(now())
+}
+
+model Model {
+  id                         Int                      @id @default(autoincrement())
+  name                       String                   @db.Text
+  description                String?                  @db.Text
+  type                       Model_type
+  createAt                   DateTime                 @default(now())
+  updatedAt                  DateTime
+  nsfw                       Boolean                  @default(false)
+  tosViolation               Boolean                  @default(false)
+  status                     Model_status             @default(Draft)
+  meta                       Json
+  deletedAt                  DateTime?
+  deletedBy                  Int?
+  allowNoCredit              Boolean                  @default(true)
+  allowCommercialUse         Model_allowCommercialUse @default(Sell)
+  allowDerivatives           Boolean                  @default(true)
+  allowDifferentLicense      Boolean                  @default(true)
+  userId                     Int
+  imageId                    Int?
+  User_Model_deletedByToUser User?                    @relation("Model_deletedByToUser", fields: [deletedBy], references: [id])
+  Image                      Image?                   @relation(fields: [imageId], references: [id])
+  User_Model_userIdToUser    User                     @relation("Model_userIdToUser", fields: [userId], references: [id])
+  ModelTag                   ModelTag[]
+  ModelVersion               ModelVersion[]
+
+  @@index([deletedBy], map: "Model_deletedBy_fkey")
+  @@index([imageId], map: "Model_imageId_fkey")
+  @@index([userId], map: "Model_userId_fkey")
+}
+
+model ModelFile {
+  id             Int                  @id @default(autoincrement())
+  name           String
+  url            String
+  sizeKb         Float
+  createdAt      DateTime             @default(now())
+  modelVersionId Int
+  visibility     ModelFile_visibility @default(Public)
+  updatedAt      DateTime
+  uploadDone     Boolean              @default(false)
+  fileType       ModelFile_fileType   @default(Other)
+  uploadId       String
+  gpuUrl         String?
+  ModelVersion   ModelVersion         @relation(fields: [modelVersionId], references: [id])
+
+  @@index([modelVersionId], map: "ModelFile_modelVersionId_fkey")
+}
+
+model ModelTag {
+  modelId Int
+  tagId   Int
+  source  ModelTag_source
+  Model   Model           @relation(fields: [modelId], references: [id])
+  Tag     Tag             @relation(fields: [tagId], references: [id])
+
+  @@id([modelId, tagId])
+  @@index([tagId], map: "ModelTag_tagId_fkey")
+}
+
+model ModelVersion {
+  id                                                       Int                       @id @default(autoincrement())
+  name                                                     String                    @db.Text
+  description                                              String?                   @db.Text
+  modelId                                                  Int
+  createdAt                                                DateTime                  @default(now())
+  updatedAt                                                DateTime
+  status                                                   ModelVersion_status       @default(Draft)
+  GenerateImage_GenerateImage_modelVersionIdToModelVersion GenerateImage[]           @relation("GenerateImage_modelVersionIdToModelVersion")
+  GenerateImage_GenerateImage_vaeIdToModelVersion          GenerateImage[]           @relation("GenerateImage_vaeIdToModelVersion")
+  GenerateImageAdditional                                  GenerateImageAdditional[]
+  ModelFile                                                ModelFile[]
+  Model                                                    Model                     @relation(fields: [modelId], references: [id])
+  Post                                                     Post[]
+
+  @@index([modelId], map: "ModelVersion_modelId_fkey")
+}
+
+model Post {
+  id             Int           @id @default(autoincrement())
+  nsfw           Boolean       @default(false)
+  title          String?
+  description    String?       @db.Text
+  userId         Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime
+  modelVersionId Int?
+  meta           Json?
+  Image          Image[]
+  ModelVersion   ModelVersion? @relation(fields: [modelVersionId], references: [id])
+  User           User          @relation(fields: [userId], references: [id])
+
+  @@index([modelVersionId], map: "Post_modelVersionId_fkey")
+  @@index([userId], map: "Post_userId_fkey")
+}
+
+model Sentence {
+  id            Int             @id @default(autoincrement())
+  sentence      String          @db.Text
+  webProjectId  Int
+  createdAt     DateTime        @default(now())
+  status        Sentence_status @default(READY)
+  sentenceIndex Int
+  WebProject    WebProject      @relation(fields: [webProjectId], references: [id])
+
+  @@unique([webProjectId, sentenceIndex])
+}
+
+model Tag {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime
+  type       Tag_type   @default(UserGenerated)
+  nsfw       Tag_nsfw   @default(None)
+  isCategory Boolean    @default(false)
+  ImageTag   ImageTag[]
+  ModelTag   ModelTag[]
+}
+
+model User {
+  id                          Int                   @id @default(autoincrement())
+  name                        String?
+  email                       String?               @unique
+  password                    String?               @db.VarChar(300)
+  social_provider             User_social_provider?
+  social_token                String?               @db.VarChar(500)
+  refresh_token               String?               @db.VarChar(512)
+  createdAt                   DateTime              @default(now())
+  deletedAt                   DateTime?
+  accountId                   Int
+  apiKey                      String?
+  profile_image_url           String?               @db.VarChar(255)
+  ChatThread                  ChatThread[]
+  GenerateImage               GenerateImage[]
+  Image                       Image[]
+  Model_Model_deletedByToUser Model[]               @relation("Model_deletedByToUser")
+  Model_Model_userIdToUser    Model[]               @relation("Model_userIdToUser")
+  Post                        Post[]
+  Account                     Account               @relation(fields: [accountId], references: [id])
+  WebProject                  WebProject[]
+
+  @@index([accountId], map: "User_accountId_fkey")
+}
+
+model WebProject {
+  id              Int               @id @default(autoincrement())
+  createdAt       DateTime          @default(now())
+  status          WebProject_status @default(READY)
+  userId          Int
+  clipSkip        Int               @default(2)
+  height          Int               @default(512)
+  sampler         String            @default("DPM2 a Karras")
+  steps           Int               @default(25)
+  vaeId           Int?
+  width           Int               @default(512)
+  projectUserName String
+  saveSuffix      String
+  modelVersionId  Int
+  seed            Int               @default(-1)
+  promptReference String?           @db.Text
+  upscale         Json?
+  Sentence        Sentence[]
+  User            User              @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "WebProject_userId_fkey")
+}
+
+enum ChatMessage_sender {
+  BOT
+  USER
+}
+
+enum ImageTag_source {
+  User
+  Rekognition
+  WD14
+  Computed
+}
+
+enum ModelTag_source {
+  User
+  Rekognition
+  WD14
+  Computed
+}
+
+enum WebProject_status {
+  READY
+  RUN_GPT_PREPROCESS
+  RUN_GPT_PROMPT
+  RUN_GENERATE
+  DONE
+}
+
+enum Model_type {
+  Checkpoint
+  TextualInversion
+  Hypernetwork
+  AestheticGradient
+  LORA
+  LoCon
+  Controlnet
+  Upscaler
+  MotionModule
+  VAE
+  Poses
+  Wildcards
+  Workflows
+  Other
+}
+
+enum GenerateServer_type {
+  RTX4090
+  RTX3070
+  GTX960
+}
+
+enum Sentence_status {
+  READY
+  RUN
+  DONE
+}
+
+enum Tag_type {
+  UserGenerated
+  Label
+  Moderation
+  System
+}
+
+enum User_social_provider {
+  Google
+  FaceBook
+  X
+}
+
+enum Tag_nsfw {
+  None
+  Soft
+  Mature
+  X
+  Blocked
+}
+
+enum ModelFile_visibility {
+  Sensitive
+  Private
+  Public
+}
+
+enum ModelVersion_status {
+  Draft
+  Training
+  Published
+  Scheduled
+  Unpublished
+  UnpublishedViolation
+  GatherInterest
+  Deleted
+}
+
+enum ChatMessage_runStatus {
+  queued
+  in_progress
+  completed
+  requires_action
+  expired
+  cancelling
+  cancelled
+  failed
+}
+
+enum GenerateImage_type {
+  TEXT2IMAGE
+  IMAGE2IMAGE
+}
+
+enum Model_status {
+  Draft
+  Training
+  Published
+  Scheduled
+  Unpublished
+  UnpublishedViolation
+  GatherInterest
+  Deleted
+}
+
+enum ModelFile_fileType {
+  Checkpoint
+  LORA
+  VAE
+  Other
+}
+
+enum Image_nsfw {
+  None
+  Soft
+  Mature
+  X
+  Blocked
+}
+
+enum Model_allowCommercialUse {
+  None
+  Image
+  RentCivit
+  Rent
+  Sell
+}
+
+enum Image_mediaType {
+  image
+  video
+  audio
+}
+
+enum GenerateImage_state {
+  READY
+  AI_PROMPT
+  START
+  DONE
+  ERROR
+  ERROR_UPLOAD
+  ERROR_GENERATE
+}
+
+enum Image_sourceType {
+  post
+  generate
+  reference
+  controlnet
+  GEN_BY_WEB_SERVICE
+}
+
+enum GenerateImage_gpuPriority {
+  RTX4090
+  RTX3070
+  GTX960
+}
