@@ -14,7 +14,6 @@ export class CustomAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['api-key'];
 
-    console.log(authHeader);
     if (!authHeader) {
       throw new UnauthorizedException('Authorization api-key is missing');
     }
