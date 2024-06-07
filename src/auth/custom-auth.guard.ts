@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class CustomAuthGuard implements CanActivate {
   constructor(private readonly prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers['api-key'];
 
     if (!authHeader) {
@@ -22,7 +23,8 @@ export class CustomAuthGuard implements CanActivate {
     if (!user) {
       throw new UnauthorizedException('Invalid api-key');
     }
-    request.user = user;
+    // request.user = user as User;
+    request['user'] = user as User;
 
     return true;
   }

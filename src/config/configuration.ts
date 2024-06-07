@@ -1,4 +1,11 @@
 export default () => ({
+  aws: {
+    region: process.env.AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  },
   openai: {
     apiKey: process.env.GPT_API,
     fearAssistantId: process.env.GPT_FEAR_ASSISTANT,
