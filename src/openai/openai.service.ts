@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAI } from 'openai';
+import { extractJsonFromString } from 'src/common/utils';
 
 @Injectable()
 export class OpenaiService {
@@ -37,5 +38,54 @@ export class OpenaiService {
     }
 
     return result;
+  }
+
+  async generateThumbnail(prompt: string, input: string) {
+    const chatCompletion = await this.openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: prompt,
+        },
+        {
+          role: 'user',
+          content: input,
+        },
+      ],
+      model: 'gpt-4o',
+      temperature: 0.2,
+    });
+
+    try {
+      console.log(chatCompletion.choices[0]?.message.content);
+      const originString = chatCompletion.choices[0]?.message.content as string;
+      const resultString = extractJsonFromString(originString) as string;
+      const result: {
+        positive: string;
+        negative: string;
+        keyword: string[];
+      } = JSON.parse(resultString);
+
+      if (!result.negative) result.negative = '';
+      if (!result.keyword) result.keyword = [];
+      result.keyword = result.keyword.map((item) =>
+        item.toUpperCase().replace(/\s+/g, '_').replace(/-/g, '_'),
+      );
+
+      result.positive =
+        'best quality, masterpiece, 4K, raytracing,' + result.positive;
+      result.negative =
+        '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers, ' +
+        result.negative;
+
+      return result;
+    } catch (error) {
+      return {
+        positive: 'best quality, masterpiece, 4K, raytracing,',
+        negative:
+          '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers',
+        keyword: '',
+      };
+    }
   }
 }

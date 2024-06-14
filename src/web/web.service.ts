@@ -1,9 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PostProjectDto } from 'src/dto/post-web.dto';
+import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { LambdaService } from 'src/lambda/lambda.service';
 import { OpenaiService } from 'src/openai/openai.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
+import {
+  thumbnailPromptByDescription,
+  thumbnailPromptByStory,
+} from 'src/common/constants';
 
 @Injectable()
 export class WebService {
@@ -84,5 +89,53 @@ export class WebService {
     return {
       body,
     };
+  }
+
+  async createThumnail(user: User, body: CreateThumbnailDto) {
+    const input = body.story ? body.story : body.description;
+    const inputPrompt = body.story
+      ? thumbnailPromptByStory
+      : thumbnailPromptByDescription;
+
+    const result = await this.openai.generateThumbnail(input, inputPrompt);
+
+    const generateImageResult = await this.prisma.generateImage.create({
+      data: {
+        sampler: body.sampler || 'DPM2 a Karras',
+        steps: body.steps,
+        negative: result.negative,
+        positive: result.positive,
+        type: 'TEXT2IMAGE',
+        batchCount: 1,
+        width: body.width,
+        height: body.height,
+        gpuPriority: body.gpuType || 'RTX3070',
+        upscale: body.upscale,
+        userId: user.id,
+        modelVersionId: body.modelId,
+        ...(body.vaeId && { vaeId: body.vaeId }),
+        ...(body.upscale && { upscale: body.upscale }),
+      },
+    });
+
+    await this.prisma.image.create({
+      data: {
+        updatedAt: new Date(),
+        url: `${body.userName}_${0}_${body.saveTime}.png`,
+        mediaType: 'image',
+        sourceType: 'GEN_BY_WEB_SERVICE',
+        mimeType: 'image/png',
+        width: generateImageResult.width,
+        height: generateImageResult.height,
+        userId: generateImageResult.userId,
+        generateImageId: generateImageResult.id,
+      },
+    });
+
+    await this.lambda.invokeFunction(
+      'websocket-gpu-server-dev-sendTask2Idle_2',
+    );
+
+    return result;
   }
 }
