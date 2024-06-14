@@ -80,11 +80,9 @@ export class WebService {
       });
     }
 
-    const resr = await this.lambda.invokeFunction(
+    await this.lambda.invokeFunction(
       'serverless-typescript-express-prod-webServiceProcess',
     );
-    console.log(resr);
-    // await invokeLambda('serverless-typescript-express-prod-webServiceProcess');
 
     return {
       body,

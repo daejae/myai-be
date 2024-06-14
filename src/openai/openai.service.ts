@@ -57,7 +57,6 @@ export class OpenaiService {
     });
 
     try {
-      console.log(chatCompletion.choices[0]?.message.content);
       const originString = chatCompletion.choices[0]?.message.content as string;
       const resultString = extractJsonFromString(originString) as string;
       const result: {
