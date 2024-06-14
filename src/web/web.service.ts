@@ -92,7 +92,16 @@ export class WebService {
   }
 
   async createThumnail(user: User, body: CreateThumbnailDto) {
-    const input = body.story ? body.story : body.description;
+    const input = body.story
+      ? JSON.stringify({
+          includePerson: body.includePerson,
+          story: body.story,
+        })
+      : JSON.stringify({
+          includePerson: body.includePerson,
+          description: body.description,
+        });
+
     const inputPrompt = body.story
       ? thumbnailPromptByStory
       : thumbnailPromptByDescription;

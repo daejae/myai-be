@@ -1,88 +1,98 @@
 export const thumbnailPromptByStory = `Objective:
-Create an effective prompt for Stable Diffusion that generates a visually appealing thumbnail image based on the given story.
+Create a structured approach for generating effective prompts for text-to-image models based on user inputs. The prompts should consider character appearance, the story context, and specific keywords, ensuring the generated images align with the user’s vision.
 
 Constraints:
-Output must be in JSON format.
-The prompt should include both positive and negative keywords.
 All prompts must be in English.
-Follow the specified structure for positive and negative prompts.
+The output must include both positive and negative prompts.
+The prompt must be formatted as a JSON object with positive and negative keys.
+If the includePerson value is true, the generated image must include a person.
 Essential Information:
 Reference: Describes the appearance of the main character.
-Sentence: Full story script.
-Target Sentence: The specific sentence for which the thumbnail is being created.
-Identify Pitfalls:
-Ensure clarity and specificity to avoid vague or incorrect images.
-Include all necessary details to capture the essence of the story and characters.
-Avoid overly long prompts that might confuse the model.
-Consider Improvements:
-Use clear and detailed descriptors.
-Place important elements at the beginning of the prompt.
-Use synonyms and varied vocabulary to enhance specificity.
-Employ both positive and negative keywords effectively.
-Craft Improved Prompt:
-Based on the above considerations, here is the revised prompt format:
-{
-  "positive": "(1 female:1.4), [description of appearance], [quality], [title], [settings], [action], [context], [environment], [lighting], [artist], [style], [type], [color composition], [computer graphics]",
-  "negative": "[unwanted elements]"
-}
-Example Implementation:
-Using the provided details, let's construct an example prompt for a story:
+Sentence: Provides a full story script to understand characters, situations, atmosphere, and content.
+Target_sentence: Specifies the key element that should be visualized.
+IncludePerson: Indicates whether the image should include a person.
+Pitfalls:
+Ambiguous or vague descriptions may lead to irrelevant or incorrect image generation.
+Overly complex prompts can confuse the model, leading to suboptimal results.
+Improvements:
+Use clear and concise language.
+Ensure the structure of the prompt is consistent.
+Place the most important details at the beginning of the prompt.
+Utilize both positive and negative prompts effectively.
 
-Reference: A young woman with long red hair and green eyes, wearing a flowing blue dress.
-Sentence: In the heart of the ancient forest, she found the hidden waterfall that sparkled under the golden sunlight.
-Target Sentence: She stood at the edge of the hidden waterfall, her eyes wide with wonder as the sunlight danced on the water.
-
+Crafted Improved Prompt:
 {
-  "positive": "(1 female:1.4), young woman, long red hair, green eyes, flowing blue dress, high quality, breathtaking scene, ancient forest, standing at the edge of waterfall, eyes wide with wonder, sunlight dancing on water, natural light, by John William Waterhouse, realistic, detailed, vibrant colors, digital art",
-  "negative": "blur, low quality, dark, cluttered, cartoonish, abstract"
+  "input": {
+    "includePerson": true,
+    "story": "In a bustling city, a lone figure stands at the edge of a rooftop, looking out over the horizon as the sun sets, casting a golden hue over the skyline."
+  },
+  "output": {
+    "positive": "(1 male:1.4), lone figure, edge of rooftop, looking out over the horizon, sunset, golden hue, bustling city skyline, cinematic lighting, by Greg Rutkowski",
+    "negative": "blurry, dark, low quality, grainy, cartoonish"
+  }
 }
-Process Steps:
-Reference: Identify key visual characteristics of the main character.
-Sentence: Understand the story context and main elements.
-Analyze: Determine the specific situation, atmosphere, and essential visual elements.
-Construct Prompt: Integrate the analyzed elements into the prompt structure for both positive and negative keywords.
-By following this structured approach, you can generate precise and effective prompts for creating high-quality thumbnails using Stable Diffusion.`;
+
+Process Explanation:
+Reference: Not provided in this example, but would typically describe the lone figure's appearance.
+Sentence: "In a bustling city, a lone figure stands at the edge of a rooftop, looking out over the horizon as the sun sets, casting a golden hue over the skyline."
+Target_sentence: The key scene to visualize is the figure standing at the rooftop during sunset in a bustling city.
+IncludePerson: true, so the prompt includes a person.
+Generated Prompt Breakdown:
+Positive:
+(1 male:1.4): Indicates one male figure.
+lone figure, edge of rooftop, looking out over the horizon, sunset, golden hue, bustling city skyline, cinematic lighting, by Greg Rutkowski: Describes the scene and aesthetic elements.
+Negative:
+blurry, dark, low quality, grainy, cartoonish: Specifies undesirable attributes.
+By following this structured approach, the prompt effectively guides the model to generate an image that aligns with the user’s vision, ensuring clarity and relevance.`;
+
 export const thumbnailPromptByDescription = `Objective:
-Create an effective prompt for Stable Diffusion that generates a visually appealing thumbnail image based on the given story.
+Generate an image prompt based on the user's input.
 
 Constraints:
-Output must be in JSON format.
-The prompt should include both positive and negative keywords.
-All prompts must be in English.
-Follow the specified structure for positive and negative prompts.
+The output must be in JSON format.
+The prompt must include positive and negative terms as described.
+Use English for all outputs.
+Translate non-English keywords if present.
+
 Essential Information:
-Reference: Describes the appearance of the main character.
-Sentence: Full story script.
-Target Sentence: The specific sentence for which the thumbnail is being created.
-Identify Pitfalls:
-Ensure clarity and specificity to avoid vague or incorrect images.
-Include all necessary details to capture the essence of the story and characters.
-Avoid overly long prompts that might confuse the model.
-Consider Improvements:
-Use clear and detailed descriptors.
-Place important elements at the beginning of the prompt.
-Use synonyms and varied vocabulary to enhance specificity.
-Employ both positive and negative keywords effectively.
+IncludePerson: Whether the image should include people or not.
+Description: The detailed scene or subject for the image.
+
+Pitfalls:
+Overly generic descriptions.
+Missing important context or details.
+Incorrect use of positive and negative prompt structures.
+Process:
+Analyze the content of the 'description' to fully understand the characters, situations, atmosphere, and content as a whole.
+Construct the positive prompt with detailed and specific terms.
+List the negative prompt terms without modifiers.
+Ensure the prompt structure adheres to the required format.
+
+Example Input and Output:
+Input:
+{
+    "includePerson": true,
+    "description": "A futuristic cityscape with flying cars and neon lights"
+}
+Output:
+{
+    "positive": "(1 male:1.4), futuristic cityscape, flying cars, neon lights, high detail, dynamic lighting, cyberpunk style",
+    "negative": "blurry, low detail, dark, outdated"
+}
+Improved Prompt Based on User's Instructions:
+IncludePerson: Check if people should be included.
+Description: Use this to describe the scene.
+
 Craft Improved Prompt:
-Based on the above considerations, here is the revised prompt format:
+Let's create a prompt for the given example:
 {
-  "positive": "(1 female:1.4), [description of appearance], [quality], [title], [settings], [action], [context], [environment], [lighting], [artist], [style], [type], [color composition], [computer graphics]",
-  "negative": "[unwanted elements]"
+    "includePerson": true,
+    "description": "A serene forest landscape with a small waterfall and a rainbow"
 }
-Example Implementation:
-Using the provided details, let's construct an example prompt for a story:
 
-Reference: A young woman with long red hair and green eyes, wearing a flowing blue dress.
-Sentence: In the heart of the ancient forest, she found the hidden waterfall that sparkled under the golden sunlight.
-Target Sentence: She stood at the edge of the hidden waterfall, her eyes wide with wonder as the sunlight danced on the water.
-
+Output:
 {
-  "positive": "(1 female:1.4), young woman, long red hair, green eyes, flowing blue dress, high quality, breathtaking scene, ancient forest, standing at the edge of waterfall, eyes wide with wonder, sunlight dancing on water, natural light, by John William Waterhouse, realistic, detailed, vibrant colors, digital art",
-  "negative": "blur, low quality, dark, cluttered, cartoonish, abstract"
+    "positive": "(1 female:1.4), serene forest landscape, small waterfall, rainbow, natural lighting, high detail, vibrant colors, peaceful atmosphere, photorealistic",
+    "negative": "artificial, dark, blurry, crowded, monochrome"
 }
-Process Steps:
-Reference: Identify key visual characteristics of the main character.
-Sentence: Understand the story context and main elements.
-Analyze: Determine the specific situation, atmosphere, and essential visual elements.
-Construct Prompt: Integrate the analyzed elements into the prompt structure for both positive and negative keywords.
-By following this structured approach, you can generate precise and effective prompts for creating high-quality thumbnails using Stable Diffusion.`;
+By following this structure, we ensure the prompt is clear, detailed, and suitable for generating high-quality images with the specified models.`;
