@@ -128,7 +128,7 @@ export class WebService {
     await this.prisma.image.create({
       data: {
         updatedAt: new Date(),
-        url: `${body.userName}_${0}_${body.saveTime}.png`,
+        url: `${body.userName}_${'thumb'}_${body.saveTime}.png`,
         mediaType: 'image',
         sourceType: 'GEN_BY_WEB_SERVICE',
         mimeType: 'image/png',
