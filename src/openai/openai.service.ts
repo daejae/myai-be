@@ -56,8 +56,9 @@ export class OpenaiService {
       temperature: 0.2,
     });
 
+    const originString = chatCompletion.choices[0]?.message.content as string;
+    console.log(originString);
     try {
-      const originString = chatCompletion.choices[0]?.message.content as string;
       const resultString = extractJsonFromString(originString) as string;
       const result: {
         positive: string;
@@ -79,6 +80,7 @@ export class OpenaiService {
 
       return result;
     } catch (error) {
+      console.log('gpt error');
       return {
         positive: 'best quality, masterpiece, 4K, raytracing,',
         negative:

@@ -120,6 +120,7 @@ export class WebService {
         upscale: body.upscale,
         userId: user.id,
         modelVersionId: body.modelId,
+        concept: body.story || body.description,
         ...(body.vaeId && { vaeId: body.vaeId }),
         ...(body.upscale && { upscale: body.upscale }),
       },
@@ -142,7 +143,7 @@ export class WebService {
     await this.lambda.invokeFunction(
       'websocket-gpu-server-dev-sendTask2Idle_2',
     );
-
+    console.log(result);
     return result;
   }
 }
