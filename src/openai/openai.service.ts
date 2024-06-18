@@ -54,10 +54,13 @@ export class OpenaiService {
       ],
       model: 'gpt-4o',
       temperature: 0.2,
+      response_format: { type: 'json_object' },
     });
 
     const originString = chatCompletion.choices[0]?.message.content as string;
+    console.log('---- start origin');
     console.log(originString);
+    console.log('---- end origin');
     try {
       const resultString = extractJsonFromString(originString) as string;
       const result: {
