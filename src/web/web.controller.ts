@@ -44,7 +44,7 @@ export class WebController {
     @Req() req: Request,
   ) {
     await this.loggerService.logApiRequest(
-      'post/thumbnail : ' + JSON.stringify(Body),
+      'post/thumbnail : ' + JSON.stringify(postThumbnailDto),
     );
     const user = req['user'] as User;
     return await this.webService.createThumnail(user, postThumbnailDto);
