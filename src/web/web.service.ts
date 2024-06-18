@@ -90,19 +90,19 @@ export class WebService {
   }
 
   async createThumnail(user: User, body: CreateThumbnailDto) {
-    const input = body.story
+    const input = body.description
       ? JSON.stringify({
           includePerson: body.includePerson,
-          story: body.story,
+          description: body.description,
         })
       : JSON.stringify({
           includePerson: body.includePerson,
-          description: body.description,
+          story: body.story,
         });
 
-    const inputPrompt = body.story
-      ? thumbnailPromptByStory
-      : thumbnailPromptByDescription;
+    const inputPrompt = body.description
+      ? thumbnailPromptByDescription
+      : thumbnailPromptByStory;
 
     const result = await this.openai.generateThumbnail(input, inputPrompt);
 
@@ -120,7 +120,7 @@ export class WebService {
         upscale: body.upscale,
         userId: user.id,
         modelVersionId: body.modelId,
-        concept: body.story || body.description,
+        concept: body.description || body.story,
         ...(body.vaeId && { vaeId: body.vaeId }),
         ...(body.upscale && { upscale: body.upscale }),
       },
