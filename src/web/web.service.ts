@@ -146,7 +146,6 @@ export class WebService {
     await this.lambda.invokeFunction(
       'websocket-gpu-server-dev-sendTask2Idle_2',
     );
-    console.log(result);
     return result;
   }
 }

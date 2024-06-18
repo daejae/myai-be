@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenAI } from 'openai';
 import { extractJsonFromString } from 'src/common/utils';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class OpenaiService {
   private openai: OpenAI;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly loggerService: LoggerService,
+  ) {
     const apiKey = this.configService.get<string>('openai.apiKey');
     this.openai = new OpenAI({
       apiKey: apiKey,
@@ -56,11 +60,7 @@ export class OpenaiService {
       temperature: 0.2,
       response_format: { type: 'json_object' },
     });
-
     const originString = chatCompletion.choices[0]?.message.content as string;
-    console.log('---- start origin');
-    console.log(originString);
-    console.log('---- end origin');
     try {
       const resultString = extractJsonFromString(originString) as string;
       const result: {
@@ -83,7 +83,6 @@ export class OpenaiService {
 
       return result;
     } catch (error) {
-      console.log('gpt error');
       return {
         positive: 'best quality, masterpiece, 4K, raytracing,',
         negative:
