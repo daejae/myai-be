@@ -9,6 +9,7 @@ import {
   thumbnailPromptByDescription,
   thumbnailPromptByStory,
 } from 'src/common/constants';
+import { checkValues } from 'src/common/utils';
 
 @Injectable()
 export class WebService {
@@ -90,7 +91,9 @@ export class WebService {
   }
 
   async createThumnail(user: User, body: CreateThumbnailDto) {
-    const input = body.description
+    // true - description // false - story
+    const isDescriptionValue = checkValues(body.story, body.description);
+    const input = isDescriptionValue
       ? JSON.stringify({
           includePerson: body.includePerson,
           description: body.description,
@@ -100,7 +103,7 @@ export class WebService {
           story: body.story,
         });
 
-    const inputPrompt = body.description
+    const inputPrompt = isDescriptionValue
       ? thumbnailPromptByDescription
       : thumbnailPromptByStory;
 
@@ -120,7 +123,7 @@ export class WebService {
         upscale: body.upscale,
         userId: user.id,
         modelVersionId: body.modelId,
-        concept: body.description || body.story,
+        concept: isDescriptionValue ? body.description : body.story,
         ...(body.vaeId && { vaeId: body.vaeId }),
         ...(body.upscale && { upscale: body.upscale }),
       },
