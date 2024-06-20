@@ -23,7 +23,7 @@ export class WebController {
   ) {}
 
   @Get('gen-text')
-  async generateText(@Query('prompt') prompt: string): Promise<string> {
+  async generateText(@Query('prompt') prompt: string): Promise<object> {
     await this.loggerService.logInfo('생성 테스트');
     return await this.webService.generateFearText(prompt);
   }
