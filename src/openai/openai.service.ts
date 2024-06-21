@@ -35,7 +35,14 @@ export class OpenaiService {
         } else if (str[i] === '}') {
           counter--;
           if (counter === 0) {
-            return JSON.parse(str.substring(startIndex, i + 1));
+            const plain = str.substring(startIndex, i + 1);
+            const fix = plain
+              .replace(/}\s*{/g, '},{')
+              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
+            // return jsonString.replace(/}\s*{/g, '},{').replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
+
+            return JSON.parse(fix);
+            // return JSON.parse(str.substring(startIndex, i + 1));
           }
         }
       }
@@ -121,17 +128,24 @@ export class OpenaiService {
       story: list.map((item) => item.story).join(' '),
     };
   }
-
-  async generateThumbnail(prompt: string, input: string) {
+  async generateThumbnail({
+    systemPrompt,
+    userPrompt,
+    appendPositive,
+  }: {
+    systemPrompt: string;
+    userPrompt: string;
+    appendPositive: string;
+  }) {
     const chatCompletion = await this.openai.chat.completions.create({
       messages: [
         {
           role: 'system',
-          content: prompt,
+          content: systemPrompt,
         },
         {
           role: 'user',
-          content: input,
+          content: userPrompt,
         },
       ],
       model: 'gpt-4o',
@@ -154,7 +168,9 @@ export class OpenaiService {
       );
 
       result.positive =
-        'best quality, masterpiece, 4K, raytracing,' + result.positive;
+        'best quality, masterpiece, 4K, raytracing, ' +
+        appendPositive +
+        result.positive;
       result.negative =
         '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers, ' +
         result.negative;
@@ -162,7 +178,8 @@ export class OpenaiService {
       return result;
     } catch (error) {
       return {
-        positive: 'best quality, masterpiece, 4K, raytracing,',
+        positive:
+          'best quality, masterpiece, 4K, raytracing, ' + appendPositive,
         negative:
           '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers',
         keyword: '',

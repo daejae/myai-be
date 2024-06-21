@@ -8,7 +8,6 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  ValidateIf,
 } from 'class-validator';
 
 const samplerList = [
@@ -49,6 +48,10 @@ export class CreateThumbnailDto {
 
   @IsBoolean()
   includePerson: boolean;
+
+  @IsOptional()
+  @IsIn(['close up', 'cowboy shot', 'upper body'])
+  cameraPosition: string;
 
   @IsOptional()
   @IsString()

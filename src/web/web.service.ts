@@ -10,6 +10,7 @@ import {
   thumbnailPromptByStory,
 } from 'src/common/constants';
 import { checkValues } from 'src/common/utils';
+import { GetGenerateText } from './dtos/get-gen-text.dto';
 
 @Injectable()
 export class WebService {
@@ -19,8 +20,8 @@ export class WebService {
     private readonly lambda: LambdaService,
   ) {}
 
-  async generateFearText(prompt: string) {
-    return await this.openai.generateFear(prompt);
+  async generateFearText(query: GetGenerateText) {
+    return await this.openai.generateFear(query.prompt);
   }
 
   async processPeoject(user: User, body: PostProjectDto) {
@@ -93,7 +94,7 @@ export class WebService {
   async createThumnail(user: User, body: CreateThumbnailDto) {
     // true - description // false - story
     const isDescriptionValue = checkValues(body.story, body.description);
-    const input = isDescriptionValue
+    const userPrompt = isDescriptionValue
       ? JSON.stringify({
           includePerson: body.includePerson,
           description: body.description,
@@ -103,11 +104,22 @@ export class WebService {
           story: body.story,
         });
 
-    const inputPrompt = isDescriptionValue
+    const systemPrompt = isDescriptionValue
       ? thumbnailPromptByDescription
       : thumbnailPromptByStory;
 
-    const result = await this.openai.generateThumbnail(input, inputPrompt);
+    const appendPositive =
+      body.includePerson == true
+        ? `hands in pockets, ${
+            body.cameraPosition ? body.cameraPosition + ', ' : ''
+          }`
+        : '';
+
+    const result = await this.openai.generateThumbnail({
+      userPrompt,
+      systemPrompt,
+      appendPositive,
+    });
 
     const generateImageResult = await this.prisma.generateImage.create({
       data: {

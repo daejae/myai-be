@@ -13,6 +13,7 @@ import { User } from '@prisma/client';
 import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import { LoggerService } from 'src/logger/logger.service';
+import { GetGenerateText } from './dtos/get-gen-text.dto';
 
 @UseGuards(CustomAuthGuard)
 @Controller('api/web')
@@ -23,9 +24,9 @@ export class WebController {
   ) {}
 
   @Get('gen-text')
-  async generateText(@Query('prompt') prompt: string): Promise<object> {
+  async generateText(@Query() query: GetGenerateText): Promise<object> {
     await this.loggerService.logInfo('생성 테스트');
-    return await this.webService.generateFearText(prompt);
+    return await this.webService.generateFearText(query);
   }
 
   @Post('projects')
