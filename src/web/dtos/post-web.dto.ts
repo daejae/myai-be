@@ -82,6 +82,9 @@ export class PostProjectDto {
   @IsInt()
   vaeId: number;
 
+  @IsBoolean()
+  includePerson: boolean;
+
   @IsOptional()
   @IsIn(samplerList)
   sampler: string;

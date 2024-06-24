@@ -201,7 +201,7 @@ model ImageTag {
 model Log {
   id        Int      @id @default(autoincrement())
   level     String
-  message   String   @db.Text
+  message   String   @db.LongText
   timestamp DateTime @default(now())
 }
 
@@ -366,6 +366,7 @@ model WebProject {
   seed            Int               @default(-1)
   promptReference String?           @db.Text
   upscale         Json?
+  includePerson   Boolean           @default(false)
   Sentence        Sentence[]
   User            User              @relation(fields: [userId], references: [id])
 

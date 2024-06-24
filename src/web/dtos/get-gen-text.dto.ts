@@ -5,6 +5,6 @@ export class GetGenerateText {
   prompt: string;
 
   @IsString()
-  @IsIn(['fear', 'sports', 'entertainment', 'technology'])
+  @IsIn(['fear'])
   category?: string;
 }

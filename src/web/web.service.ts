@@ -42,6 +42,7 @@ export class WebService {
         ...(body.height && { height: body.height }),
         ...(body.steps && { steps: body.steps }),
         ...(body.upscale && { upscale: body.upscale }),
+        ...(body.includePerson && { includePerson: body.includePerson }),
       },
       include: {
         Sentence: true,
