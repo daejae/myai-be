@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { WebService } from './web.service';
-import { CustomAuthGuard } from 'src/auth/custom-auth.guard';
+import { CustomAuthGuard } from 'src/guards/custom-auth.guard';
 import { User } from '@prisma/client';
 import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
