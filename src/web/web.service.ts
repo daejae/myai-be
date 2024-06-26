@@ -44,7 +44,7 @@ export class WebService {
       ...categoryConfig,
       prompt:
         (prompt || this.getDefaultPrompt(category)) +
-        ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\'), 쌍다옴표(\"))`,
+        ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
     };
 
     if (!config.assistantId || !config.threadId) {

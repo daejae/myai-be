@@ -153,10 +153,11 @@ export class OpenaiService {
             const plain = str.substring(startIndex, i + 1);
             const fix = plain
               .replace(/}\s*{/g, '},{')
-              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',')
-              .replace(/\\n/g, `\n`)
-              .replace(/\\"/g, `\"`)
-              .replace(/\\'/g, `\'`);
+              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
+            // .replace(/\\\\"/g, '\\"');
+            // .replace(/\\n/g, `\n`)
+            // .replace(/\\"/g, `\"`)
+            // .replace(/\\'/g, `\'`);
             // return jsonString.replace(/}\s*{/g, '},{').replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
 
             return JSON.parse(fix);
