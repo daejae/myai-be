@@ -11,6 +11,7 @@ import {
 } from 'src/common/constants';
 import { checkValues } from 'src/common/utils';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WebService {
@@ -18,10 +19,42 @@ export class WebService {
     private readonly openai: OpenaiService,
     private readonly prisma: PrismaService,
     private readonly lambda: LambdaService,
+    private readonly config: ConfigService,
   ) {}
 
-  async generateFearText(query: GetGenerateText) {
-    return await this.openai.generateFear(query.prompt);
+  private getDefaultPrompt(category: string): string {
+    const prompts = {
+      fear: '무서운 이야기 만들어줘',
+      horror: '무서운 이야기 만들어줘',
+      greek_mythology: '그리스 신화를 기반으로 한 이야기를 만들어줘',
+      // western_classics: '서양 고전 문학을 기반으로 한 이야기를 만들어줘',
+    };
+
+    return prompts[category] || '이야기 만들어줘';
+  }
+
+  async generateText({ prompt, category }: GetGenerateText) {
+    const categoryConfig = this.config.get(`openai.${category}`);
+
+    if (!categoryConfig) {
+      throw new HttpException('Invalid category', HttpStatus.BAD_REQUEST);
+    }
+
+    const config = {
+      ...categoryConfig,
+      prompt:
+        (prompt || this.getDefaultPrompt(category)) +
+        ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\'), 쌍다옴표(\"))`,
+    };
+
+    if (!config.assistantId || !config.threadId) {
+      throw new HttpException(
+        'Configuration not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return await this.openai.generateTextWithAssistant(config);
   }
 
   async processPeoject(user: User, body: PostProjectDto) {

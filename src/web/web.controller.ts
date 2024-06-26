@@ -26,7 +26,7 @@ export class WebController {
   @Get('gen-text')
   async generateText(@Query() query: GetGenerateText): Promise<object> {
     await this.loggerService.logInfo('생성 테스트');
-    return await this.webService.generateFearText(query);
+    return await this.webService.generateText(query);
   }
 
   @Post('projects')
