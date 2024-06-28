@@ -42,7 +42,9 @@ export class OpenaiService {
             const plain = str.substring(startIndex, i + 1);
             const fix = plain
               .replace(/}\s*{/g, '},{')
-              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
+              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',')
+              .replace(/(\r\n|\n|\r)/g, ''); // 모든 개햄문자 삭제
+
             // return jsonString.replace(/}\s*{/g, '},{').replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
 
             return JSON.parse(fix);
