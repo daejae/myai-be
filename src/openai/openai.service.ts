@@ -39,16 +39,29 @@ export class OpenaiService {
         } else if (str[i] === '}') {
           counter--;
           if (counter === 0) {
+            // const plain = str.substring(startIndex, i + 1);
+            // const fix = plain
+            //   .replace(/}\s*{/g, '},{')
+            //   .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',')
+            //   .replace(/(\r\n|\n|\r)/g, '') // 모든 개햄문자 삭제
+            //   .replace(/\\'/g, "'"); // 홀따옴표 처리
+            // // return jsonString.replace(/}\s*{/g, '},{').replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
+            // return JSON.parse(fix);
+
             const plain = str.substring(startIndex, i + 1);
-            const fix = plain
-              .replace(/}\s*{/g, '},{')
-              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',')
-              .replace(/(\r\n|\n|\r)/g, ''); // 모든 개햄문자 삭제
+            const fixedPlain = plain
+              .replace(/}\s*{/g, '},{') // 중첩된 JSON 객체를 배열 형식으로 변환
+              .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',') // 객체 사이에 쉼표 추가
+              .replace(/(\r\n|\n|\r|\\n)/g, '') // 모든 개행 문자 삭제
+              .replace(/\\'/g, "'"); // 이스케이프된 작은따옴표 처리
 
-            // return jsonString.replace(/}\s*{/g, '},{').replace(/(?<=["\]}])\s*(?=["\[{])/g, ',');
-
-            return JSON.parse(fix);
-            // return JSON.parse(str.substring(startIndex, i + 1));
+            try {
+              return JSON.parse(fixedPlain);
+            } catch (e) {
+              console.error('JSON 파싱 오류:', e);
+              console.log('파싱 시도한 문자열:', fixedPlain);
+              throw e;
+            }
           }
         }
       }
