@@ -37,7 +37,7 @@ export class WebService {
     return prompts[category] || '이야기 만들어줘';
   }
 
-  async generateText({ prompt, category }: GetGenerateText) {
+  async generateText({ prompt, category, language }: GetGenerateText) {
     const categoryConfig = this.config.get(`openai.${category}`);
 
     if (!categoryConfig) {
@@ -49,7 +49,8 @@ export class WebService {
       prompt:
         (prompt || this.getDefaultPrompt(category)) +
         // ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
-        ` // !important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다)`,
+        ` // !important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다)` +
+        `, (스크립트 출력 언어: ${language || 'ko'})`,
     };
 
     if (!config.assistantId || !config.threadId) {

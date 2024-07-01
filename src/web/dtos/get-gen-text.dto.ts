@@ -14,5 +14,9 @@ export class GetGenerateText {
     'nietzsche',
     'fairytale',
   ])
-  category?: string;
+  category: string;
+
+  @IsOptional()
+  @IsIn(['ko', 'en', 'jp'])
+  language: string;
 }
