@@ -24,10 +24,14 @@ export class WebService {
 
   private getDefaultPrompt(category: string): string {
     const prompts = {
+      test: '',
       fear: '무서운 이야기 만들어줘',
       horror: '무서운 이야기 만들어줘',
       greek_mythology: '그리스 신화를 기반으로 한 이야기를 만들어줘',
       // western_classics: '서양 고전 문학을 기반으로 한 이야기를 만들어줘',
+      socrates: '이야기 만들어줘',
+      nietzsche: '이야기 만들어줘',
+      fairytale: '이야기 만들어줘',
     };
 
     return prompts[category] || '이야기 만들어줘';
@@ -44,7 +48,8 @@ export class WebService {
       ...categoryConfig,
       prompt:
         (prompt || this.getDefaultPrompt(category)) +
-        ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
+        // ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
+        ` // !important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다)`,
     };
 
     if (!config.assistantId || !config.threadId) {

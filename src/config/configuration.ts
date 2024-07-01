@@ -8,6 +8,10 @@ export default () => ({
   },
   openai: {
     apiKey: process.env.GPT_API,
+    test: {
+      assistantId: process.env.TEST_ASSISTANT,
+      threadId: process.env.TEST_THREAD,
+    },
     fear: {
       assistantId: process.env.GPT_FEAR_ASSISTANT,
       threadId: process.env.GPT_FEAR_THREAD,
