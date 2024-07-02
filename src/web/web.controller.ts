@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { WebService } from './web.service';
-import { CustomAuthGuard } from 'src/guards/custom-auth.guard';
+import { CustomAuthGuard } from 'src/common/guards/custom-auth.guard';
 import { User } from '@prisma/client';
 import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
@@ -24,17 +24,27 @@ export class WebController {
   ) {}
 
   @Get('gen-text')
-  async generateText(@Query() query: GetGenerateText): Promise<object> {
+  async generateText(
+    @Req() req: Request,
+    @Query() query: GetGenerateText,
+  ): Promise<object> {
+    const user = req['user'] as User;
+    await this.loggerService.logInfo(`텍스트 요청 // ${user.name}`);
+    const result = await this.webService.generateText(query);
+
     await this.loggerService.logInfo(
-      `텍스트 생성 / generateText / ${JSON.stringify(query)}`,
+      `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
+        query,
+      )} // ${JSON.stringify(result)} `,
     );
-    return await this.webService.generateText(query);
+
+    return result;
   }
 
   @Post('projects')
   async PostProjects(
-    @Body() postProjectsDto: PostProjectDto,
     @Req() req: Request,
+    @Body() postProjectsDto: PostProjectDto,
   ) {
     const user = req['user'] as User;
 

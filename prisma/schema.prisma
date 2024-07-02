@@ -203,6 +203,9 @@ model Log {
   level     String
   message   String   @db.LongText
   timestamp DateTime @default(now())
+  method    String?
+  status    Int?
+  url       String?  @db.Text
 }
 
 model Model {

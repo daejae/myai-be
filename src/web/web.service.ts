@@ -53,6 +53,15 @@ export class WebService {
         `, (스크립트 출력 언어: ${language || 'ko'})`,
     };
 
+    // const config = {
+    //   ...categoryConfig,
+    //   prompt: JSON.stringify({
+    //     출력언어: `${language || 'ko'}`,
+    //     필수지침: `출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다, 스크립트 생성 시 새로운 이야기로 만든다`,
+    //     요청: prompt || this.getDefaultPrompt(category),
+    //   }),
+    // };
+
     if (!config.assistantId || !config.threadId) {
       throw new HttpException(
         'Configuration not found',
