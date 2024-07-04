@@ -1,4 +1,10 @@
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class GetGenerateText {
   @IsOptional()
@@ -19,4 +25,8 @@ export class GetGenerateText {
   @IsOptional()
   @IsIn(['ko', 'en', 'jp'])
   language: string;
+
+  @IsOptional()
+  @IsNumberString()
+  length: number;
 }

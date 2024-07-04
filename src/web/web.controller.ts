@@ -47,6 +47,7 @@ export class WebController {
     @Body() postProjectsDto: PostProjectDto,
   ) {
     const user = req['user'] as User;
+    await this.loggerService.logInfo(`이미지 생성 요청 // ${user.name}`);
 
     return await this.webService.processPeoject(user, postProjectsDto);
   }
@@ -56,10 +57,11 @@ export class WebController {
     @Body() postThumbnailDto: CreateThumbnailDto,
     @Req() req: Request,
   ) {
-    await this.loggerService.logApiRequest(
-      'post/thumbnail : ' + JSON.stringify(postThumbnailDto),
-    );
     const user = req['user'] as User;
+    await this.loggerService.logInfo(
+      `썸네일 생성 요청 // ${user.name} // ${JSON.stringify(postThumbnailDto)}`,
+    );
+
     return await this.webService.createThumnail(user, postThumbnailDto);
   }
 }

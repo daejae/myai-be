@@ -52,8 +52,9 @@ export class OpenaiService {
             const fixedPlain = plain
               .replace(/}\s*{/g, '},{') // 중첩된 JSON 객체를 배열 형식으로 변환
               .replace(/(?<=["\]}])\s*(?=["\[{])/g, ',') // 객체 사이에 쉼표 추가
-              .replace(/(\r\n|\n|\r|\\n)/g, '') // 모든 개행 문자 삭제
-              .replace(/\\'/g, "'"); // 이스케이프된 작은따옴표 처리
+              .replace(/(\r\n|\n|\r|\\n)/g, ' ') // 모든 개행 문자 삭제
+              .replace(/\\'/g, "'") // 이스케이프된 작은따옴표 처리
+              .replace(/\\\\"/g, `\\"`);
 
             try {
               return JSON.parse(fixedPlain);
