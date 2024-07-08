@@ -44,7 +44,7 @@ export class WebService {
       throw new HttpException('Invalid category', HttpStatus.BAD_REQUEST);
     }
 
-    const scriptLength = length || 4000;
+    const scriptLength = (length || 4000) * 2; // 토큰이 기준인지 2배를 해야됨.
     const config = {
       ...categoryConfig,
       prompt:
