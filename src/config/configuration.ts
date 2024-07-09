@@ -35,6 +35,14 @@ export default () => ({
       assistantId: process.env.FAIRYTALE_ASSISTANT_ID,
       threadId: process.env.FAIRYTALE_THREAD_ID,
     },
+
+    // 숏폼
+    short: {
+      horror: {
+        assistantId: process.env.GPT_SHORT_HORROR_ASSISTANT,
+        threadId: process.env.GPT_SHORT_HORROR_THREAD,
+      },
+    },
   },
   app: {
     port: parseInt(process.env.APP_PORT, 10) || 3000,

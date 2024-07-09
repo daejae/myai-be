@@ -77,6 +77,32 @@ export class WebService {
     return await this.openai.generateTextWithAssistant(config);
   }
 
+  async generateText_Short({ prompt, category, language }: GetGenerateText) {
+    const categoryConfig = this.config.get(`openai.short.${category}`);
+
+    if (!categoryConfig) {
+      throw new HttpException('Invalid category', HttpStatus.BAD_REQUEST);
+    }
+
+    const config = {
+      ...categoryConfig,
+      prompt:
+        // ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
+        `!important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다), (문장과 문장 사이를 공백으로 구분한다)` +
+        `, (스크립트 출력 언어: ${language || 'ko'})` +
+        `\\n 요청사항 : ${prompt || this.getDefaultPrompt(category)}`,
+    };
+
+    if (!config.assistantId || !config.threadId) {
+      throw new HttpException(
+        'Configuration not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return await this.openai.generateTextWithAssistant(config);
+  }
+
   async processPeoject(user: User, body: PostProjectDto) {
     if (!body.data.some((item) => item.imageGen == true)) {
       throw new HttpException('Invalid sentence', HttpStatus.BAD_REQUEST);

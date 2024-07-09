@@ -41,6 +41,23 @@ export class WebController {
     return result;
   }
 
+  @Get('gen-text-short')
+  async generateTextShort(
+    @Req() req: Request,
+    @Query() query: GetGenerateText,
+  ): Promise<object> {
+    const user = req['user'] as User;
+    await this.loggerService.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
+    const result = await this.webService.generateText_Short(query);
+    await this.loggerService.logInfo(
+      `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
+        query,
+      )} // ${JSON.stringify(result)} `,
+    );
+
+    return result;
+  }
+
   @Post('projects')
   async PostProjects(
     @Req() req: Request,
