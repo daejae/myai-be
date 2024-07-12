@@ -58,9 +58,10 @@ export class OpenaiService {
                 .replace(/(\r\n|\n|\r|\\n)/g, ' ') // 모든 개행 문자 삭제
                 .replace(/\\'/g, "'") // 이스케이프된 작은따옴표 처리
                 .replace(/\\\\"/g, `\\"`)
-                .replace(/\\","next$/, `.","next`) // next앞에 쌍따옴표 처리에 이스케이프 있으면 삭제
-                .replace(/\\"}/, `."}`)
-                .replace(/\\" }/, `." }`);
+                .replace(/\\","next$/, `","next`) // next앞에 쌍따옴표 처리에 이스케이프 있으면 삭제
+                .replace(/\\", "next$/, `","next`)
+                .replace(/\\"}/, `"}`)
+                .replace(/\\" }/, `" }`);
 
               try {
                 return JSON.parse(fixedPlain);
