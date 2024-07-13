@@ -63,10 +63,24 @@ export class WebController {
     @Req() req: Request,
     @Body() postProjectsDto: PostProjectDto,
   ) {
+    console.log('function -- call');
     const user = req['user'] as User;
-    await this.loggerService.logInfo(`이미지 생성 요청 // ${user.name}`);
 
-    return await this.webService.processPeoject(user, postProjectsDto);
+    setTimeout(async () => {
+      try {
+        await this.loggerService.logInfo(`이미지 생성 요청 // ${user.name}`);
+        await this.webService.processPeoject(user, postProjectsDto);
+        await this.loggerService.logInfo(
+          `이미지 생성 요청 처리 완료 // ${user.name}`,
+        );
+      } catch (error) {
+        await this.loggerService.logError(
+          `이미지 생성 요청 에러 // ${user.name}`,
+        );
+      }
+    }, 0);
+
+    return;
   }
 
   @Post('thumbnail')
