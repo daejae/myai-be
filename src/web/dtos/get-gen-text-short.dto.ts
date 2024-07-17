@@ -1,12 +1,12 @@
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
-export class GetGenerateText {
+export class GetGenerateShortText {
   @IsOptional()
   @IsString()
   prompt: string;
 
   @IsString()
-  @IsIn(['horror'])
+  @IsIn(['horror', 'horror_test'])
   category: string;
 
   @IsOptional()

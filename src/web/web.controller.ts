@@ -14,6 +14,7 @@ import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
+import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
 
 @UseGuards(CustomAuthGuard)
 @Controller('api/web')
@@ -44,7 +45,7 @@ export class WebController {
   @Get('gen-text-short')
   async generateTextShort(
     @Req() req: Request,
-    @Query() query: GetGenerateText,
+    @Query() query: GetGenerateShortText,
   ): Promise<object> {
     const user = req['user'] as User;
     await this.loggerService.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
@@ -63,7 +64,6 @@ export class WebController {
     @Req() req: Request,
     @Body() postProjectsDto: PostProjectDto,
   ) {
-    console.log('function -- call');
     const user = req['user'] as User;
 
     setTimeout(async () => {

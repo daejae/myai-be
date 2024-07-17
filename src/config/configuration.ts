@@ -42,6 +42,10 @@ export default () => ({
         assistantId: process.env.GPT_SHORT_HORROR_ASSISTANT,
         threadId: process.env.GPT_SHORT_HORROR_THREAD,
       },
+      horror_test: {
+        assistantId: process.env.GPT_SHORT_HORROR_TEST_ASSISTANT,
+        threadId: process.env.GPT_SHORT_HORROR_TEST_THREAD,
+      },
     },
   },
   app: {

@@ -12,6 +12,7 @@ import {
 import { checkValues } from 'src/common/utils';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
 import { ConfigService } from '@nestjs/config';
+import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
 
 @Injectable()
 export class WebService {
@@ -77,7 +78,11 @@ export class WebService {
     return await this.openai.generateTextWithAssistant(config);
   }
 
-  async generateText_Short({ prompt, category, language }: GetGenerateText) {
+  async generateText_Short({
+    prompt,
+    category,
+    language,
+  }: GetGenerateShortText) {
     const categoryConfig = this.config.get(`openai.short.${category}`);
 
     if (!categoryConfig) {
