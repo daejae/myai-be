@@ -67,21 +67,11 @@ export class WebController {
   ) {
     const user = req['user'] as User;
 
-    setTimeout(async () => {
-      try {
-        await this.loggerService.logInfo(`이미지 생성 요청 // ${user.name}`);
-        await this.webService.processPeoject(user, postProjectsDto);
-        await this.loggerService.logInfo(
-          `이미지 생성 요청 처리 완료 // ${user.name}`,
-        );
-      } catch (error) {
-        const errorString = debugError(error);
-
-        await this.loggerService.logError(
-          `이미지 생성 요청 에러 // ${user.name} // ${errorString}`,
-        );
-      }
-    }, 0);
+    await this.loggerService.logInfo(`이미지 생성 요청 // ${user.name}`);
+    await this.webService.processPeoject(user, postProjectsDto);
+    await this.loggerService.logInfo(
+      `이미지 생성 요청 처리 완료 // ${user.name}`,
+    );
 
     return;
   }
