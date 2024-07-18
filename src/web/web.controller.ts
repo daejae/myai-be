@@ -15,6 +15,7 @@ import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
 import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
+import { debugError } from 'src/common/utils/debugError';
 
 @UseGuards(CustomAuthGuard)
 @Controller('api/web')
@@ -74,8 +75,10 @@ export class WebController {
           `이미지 생성 요청 처리 완료 // ${user.name}`,
         );
       } catch (error) {
+        const errorString = debugError(error);
+
         await this.loggerService.logError(
-          `이미지 생성 요청 에러 // ${user.name}`,
+          `이미지 생성 요청 에러 // ${user.name} // ${errorString}`,
         );
       }
     }, 0);
