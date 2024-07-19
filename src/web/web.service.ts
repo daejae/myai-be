@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { GeneratedStory_category, User } from '@prisma/client';
 import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { LambdaService } from 'src/lambda/lambda.service';
 import { OpenaiService } from 'src/openai/openai.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import {
   thumbnailPromptByDescription,
@@ -75,7 +75,18 @@ export class WebService {
       );
     }
 
-    return await this.openai.generateTextWithAssistant(config);
+    const result = await this.openai.generateTextWithAssistant(config);
+
+    await this.prisma.generatedStory.create({
+      data: {
+        category: category as GeneratedStory_category,
+        content: result.story,
+        formType: 'LONG',
+        inputPrompt: config.prompt,
+        title: result.title,
+      },
+    });
+    return result;
   }
 
   async generateText_Short({
@@ -105,7 +116,19 @@ export class WebService {
       );
     }
 
-    return await this.openai.generateTextWithAssistant(config);
+    const result = await this.openai.generateTextWithAssistant(config);
+
+    await this.prisma.generatedStory.create({
+      data: {
+        category: category as GeneratedStory_category,
+        content: result.story,
+        formType: 'SHORT',
+        inputPrompt: config.prompt,
+        title: result.title,
+      },
+    });
+
+    return result;
   }
 
   async processPeoject(user: User, body: PostProjectDto) {

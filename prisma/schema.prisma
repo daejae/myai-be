@@ -376,6 +376,19 @@ model WebProject {
   @@index([userId], map: "WebProject_userId_fkey")
 }
 
+model GeneratedStory {
+  id            Int                     @id @default(autoincrement())
+  createAt      DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  formType      GeneratedStory_formType
+  category      GeneratedStory_category
+  inputPrompt   String                  @db.Text
+  title         String                  @db.VarChar(255)
+  content       String                  @db.Text
+  likeCount     Int                     @default(0)
+  processedInAI Boolean                 @default(false)
+}
+
 enum ChatMessage_sender {
   BOT
   USER
@@ -548,4 +561,18 @@ enum GenerateImage_gpuPriority {
   RTX4090
   RTX3070
   GTX960
+}
+
+enum GeneratedStory_formType {
+  LONG
+  SHORT
+}
+
+enum GeneratedStory_category {
+  horror_test
+  horror
+  greek_mythology
+  socrates
+  nietzsche
+  fairytale
 }
