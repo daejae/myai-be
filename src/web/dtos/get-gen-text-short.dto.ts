@@ -6,7 +6,7 @@ export class GetGenerateShortText {
   prompt: string;
 
   @IsString()
-  @IsIn(['horror', 'horror_test'])
+  @IsIn(['horror', 'horror_test', 'nietzsche'])
   category: string;
 
   @IsOptional()

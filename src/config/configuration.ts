@@ -46,6 +46,10 @@ export default () => ({
         assistantId: process.env.GPT_SHORT_HORROR_TEST_ASSISTANT,
         threadId: process.env.GPT_SHORT_HORROR_TEST_THREAD,
       },
+      nietzsche: {
+        assistantId: process.env.GPT_SHORT_NIETZSCHE_ASSISTANT,
+        threadId: process.env.GPT_SHORT_NIETZSCHE_THREAD,
+      },
     },
   },
   app: {
