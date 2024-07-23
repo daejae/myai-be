@@ -192,7 +192,8 @@ export class OpenaiService {
           content: userPrompt,
         },
       ],
-      model: 'gpt-4o',
+      // model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       temperature: 0.2,
       response_format: { type: 'json_object' },
     });
