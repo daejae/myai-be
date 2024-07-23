@@ -13,6 +13,7 @@ import { checkValues } from 'src/common/utils';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
 import { ConfigService } from '@nestjs/config';
 import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class WebService {
@@ -21,6 +22,7 @@ export class WebService {
     private readonly prisma: PrismaService,
     private readonly lambda: LambdaService,
     private readonly config: ConfigService,
+    private readonly logger: LoggerService,
   ) {}
 
   private getDefaultPrompt(category: string): string {
@@ -50,7 +52,7 @@ export class WebService {
       ...categoryConfig,
       prompt:
         // ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
-        `!important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다), (문장과 문장 사이를 공백으로 구분한다)` +
+        `!important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 주제와 이야기를 만든다), (문장과 문장 사이를 공백으로 구분한다)` +
         `, (스크립트 출력 언어: ${language || 'ko'})` +
         `, (스크립트는 반드시 ${scriptLength}글자이상)` +
         // `, (스크립트는 반드시 ${Math.ceil(
@@ -75,18 +77,34 @@ export class WebService {
       );
     }
 
-    const result = await this.openai.generateTextWithAssistant(config);
+    for (let retry = 0; retry < 3; retry++) {
+      const result = await this.openai.generateTextWithAssistant(config);
 
-    await this.prisma.generatedStory.create({
-      data: {
-        category: category as GeneratedStory_category,
-        content: result.story,
-        formType: 'LONG',
-        inputPrompt: config.prompt,
-        title: result.title,
-      },
-    });
-    return result;
+      const finedStory = await this.prisma.generatedStory.findFirst({
+        where: {
+          title: result.title,
+        },
+      });
+
+      if (finedStory) {
+        this.logger.logInfo(
+          `롱폼 / ${category} / ${result.title} 중복 / retry : ${retry}`,
+        );
+        continue;
+      }
+
+      await this.prisma.generatedStory.create({
+        data: {
+          category: category as GeneratedStory_category,
+          content: result.story,
+          formType: 'LONG',
+          inputPrompt: config.prompt,
+          title: result.title,
+        },
+      });
+
+      return result;
+    }
   }
 
   async generateText_Short({
@@ -104,7 +122,7 @@ export class WebService {
       ...categoryConfig,
       prompt:
         // ` (이스케이프 문자를 활용해서 출력한다. 개행(\n), 따옴표(\\'), 쌍다옴표(\\"))`,
-        `!important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 이야기로 만든다), (문장과 문장 사이를 공백으로 구분한다)` +
+        `!important (출력은 반드시 JSON 포맷을 지켜야한다. 개행 및 들여쓰기는 출력에 포함하지 않는다, 홀따옴표 및 쌍따옴표는 반드시 이스케이프 문자로 치환하여 출력한다), (스크립트 생성 시 새로운 주제와 이야기를 만든다), (문장과 문장 사이를 공백으로 구분한다)` +
         `, (스크립트 출력 언어: ${language || 'ko'})` +
         `\\n 요청사항 : ${prompt || this.getDefaultPrompt(category)}`,
     };
@@ -116,19 +134,34 @@ export class WebService {
       );
     }
 
-    const result = await this.openai.generateTextWithAssistant(config);
+    for (let retry = 0; retry < 3; retry++) {
+      const result = await this.openai.generateTextWithAssistant(config);
 
-    await this.prisma.generatedStory.create({
-      data: {
-        category: category as GeneratedStory_category,
-        content: result.story,
-        formType: 'SHORT',
-        inputPrompt: config.prompt,
-        title: result.title,
-      },
-    });
+      const finedStory = await this.prisma.generatedStory.findFirst({
+        where: {
+          title: result.title,
+        },
+      });
 
-    return result;
+      if (finedStory) {
+        this.logger.logInfo(
+          `숏폼 / ${category} / ${result.title} 중복 / retry : ${retry}`,
+        );
+        continue;
+      }
+
+      await this.prisma.generatedStory.create({
+        data: {
+          category: category as GeneratedStory_category,
+          content: result.story,
+          formType: 'SHORT',
+          inputPrompt: config.prompt,
+          title: result.title,
+        },
+      });
+
+      return result;
+    }
   }
 
   async processPeoject(user: User, body: PostProjectDto) {
