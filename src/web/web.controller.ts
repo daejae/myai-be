@@ -15,7 +15,6 @@ import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { GetGenerateText } from './dtos/get-gen-text.dto';
 import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
-import { debugError } from 'src/common/utils/debugError';
 
 @UseGuards(CustomAuthGuard)
 @Controller('api/web')
@@ -31,7 +30,9 @@ export class WebController {
     @Query() query: GetGenerateText,
   ): Promise<object> {
     const user = req['user'] as User;
-    await this.loggerService.logInfo(`텍스트 요청 // ${user.name}`);
+    await this.loggerService.logInfo(
+      `롱폼 텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
+    );
     const result = await this.webService.generateText(query);
 
     await this.loggerService.logInfo(
