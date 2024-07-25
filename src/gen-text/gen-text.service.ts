@@ -84,15 +84,19 @@ export class GenTextService {
 
   async createShortText({ category, language, prompt }: GetShortTextDto) {
     for (let retry = 0; retry < 3; retry++) {
-      const draftString = await this.openai.createChat({
-        systemPrompt: systemPrompt_short_horror[0],
-        userPrompt:
-          // `${new Date()}` +
-          `(스크립트의 장르: ${category}),` +
-          // `(story 길이: ${400} 자),` +
-          `(스크립트 출력 언어: ${language || 'ko'}),` +
-          `\\n 요청사항 : ${prompt || this.getDefaultPrompt(category)}`,
+      const draftString = await this.openai.createChatTest({
+        userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
       });
+
+      // const draftString = await this.openai.createChat({
+      //   systemPrompt: systemPrompt_short_horror[0],
+      //   userPrompt:
+      //     // `${new Date()}` +
+      //     `(스크립트의 장르: ${category}),` +
+      //     // `(story 길이: ${400} 자),` +
+      //     `(스크립트 출력 언어: ${language || 'ko'}),` +
+      //     `\\n 요청사항 : ${prompt || this.getDefaultPrompt(category)}`,
+      // });
 
       const draft = JSON.parse(draftString.message.content);
       const finedStory = await this.prisma.generatedStory.findFirst({
@@ -125,7 +129,10 @@ export class GenTextService {
         },
       });
 
-      return result;
+      return {
+        // draft,
+        ...result,
+      };
     }
   }
 }
