@@ -78,10 +78,7 @@ export class GenTextService {
         },
       });
 
-      return {
-        // draft,
-        result,
-      };
+      return result;
     }
   }
 
