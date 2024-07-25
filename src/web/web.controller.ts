@@ -24,42 +24,42 @@ export class WebController {
     private readonly loggerService: LoggerService,
   ) {}
 
-  @Get('gen-text')
-  async generateText(
-    @Req() req: Request,
-    @Query() query: GetGenerateText,
-  ): Promise<object> {
-    const user = req['user'] as User;
-    await this.loggerService.logInfo(
-      `롱폼 텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
-    );
-    const result = await this.webService.generateText(query);
+  // @Get('gen-text')
+  // async generateText(
+  //   @Req() req: Request,
+  //   @Query() query: GetGenerateText,
+  // ): Promise<object> {
+  //   const user = req['user'] as User;
+  //   await this.loggerService.logInfo(
+  //     `롱폼 텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
+  //   );
+  //   const result = await this.webService.generateText(query);
 
-    await this.loggerService.logInfo(
-      `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
-        query,
-      )} // ${JSON.stringify(result)} `,
-    );
+  //   await this.loggerService.logInfo(
+  //     `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
+  //       query,
+  //     )} // ${JSON.stringify(result)} `,
+  //   );
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  @Get('gen-text-short')
-  async generateTextShort(
-    @Req() req: Request,
-    @Query() query: GetGenerateShortText,
-  ): Promise<object> {
-    const user = req['user'] as User;
-    await this.loggerService.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
-    const result = await this.webService.generateText_Short(query);
-    await this.loggerService.logInfo(
-      `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
-        query,
-      )} // ${JSON.stringify(result)} `,
-    );
+  // @Get('gen-text-short')
+  // async generateTextShort(
+  //   @Req() req: Request,
+  //   @Query() query: GetGenerateShortText,
+  // ): Promise<object> {
+  //   const user = req['user'] as User;
+  //   await this.loggerService.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
+  //   const result = await this.webService.generateText_Short(query);
+  //   await this.loggerService.logInfo(
+  //     `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
+  //       query,
+  //     )} // ${JSON.stringify(result)} `,
+  //   );
 
-    return result;
-  }
+  //   return result;
+  // }
 
   @Post('projects')
   async PostProjects(

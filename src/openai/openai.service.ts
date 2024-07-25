@@ -231,4 +231,28 @@ export class OpenaiService {
       };
     }
   }
+
+  async createChat({
+    systemPrompt,
+    userPrompt,
+  }: {
+    systemPrompt: string;
+    userPrompt: string;
+  }) {
+    const completion = await this.openai.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: userPrompt,
+        },
+      ],
+      max_tokens: 16383,
+      model: 'gpt-4o-mini',
+      response_format: { type: 'json_object' },
+    });
+
+    const result = completion.choices[0];
+    return result;
+  }
 }
