@@ -108,7 +108,7 @@ export class GenTextService {
     }
   }
 
-  async createText({ category, language, prompt, length }: GetTextDto) {
+  async createTextLong({ category, language, prompt, length }: GetTextDto) {
     const draft = await this.openai.createChatTest({
       userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
       isJson: false,
@@ -119,17 +119,51 @@ export class GenTextService {
       isJson: false,
     });
 
-    const modifyDraft = await this.openai.createChatTest({
-      userPrompt: `오타수정 및 이야기 ${length}자 ${
-        draft.message.content.length > length
-          ? '이하로 줄여줘'
-          : '이상으로 늘려줘'
-      }. \n${draft.message.content}`,
+    const resultString = await this.openai.createChatTest({
+      userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}\n${draft.message.content}`,
+      isJson: true,
+    });
+
+    const result = JSON.parse(resultString.message.content);
+
+    await this.prisma.generatedStory.create({
+      data: {
+        category: category as GeneratedStory_category,
+        content: result.story,
+        formType: 'LONG',
+        inputPrompt: '',
+        title: result.title,
+      },
+    });
+
+    return {
+      ...result,
+    };
+  }
+
+  async createTextShort({ category, language, prompt, length }: GetTextDto) {
+    const draft = await this.openai.createChatTest({
+      userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
       isJson: false,
     });
 
+    const title = await this.openai.createChatTest({
+      userPrompt: `해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘. \n${draft.message.content}`,
+      isJson: false,
+    });
+
+    let modifyDraft = draft.message.content;
+
+    while (modifyDraft.length > length) {
+      const resizeResult = await this.openai.createChatTest({
+        userPrompt: `이야기 줄여줘. \n ${modifyDraft}`,
+        isJson: false,
+      });
+      modifyDraft = resizeResult.message.content;
+    }
+
     const resultString = await this.openai.createChatTest({
-      userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}\n${modifyDraft.message.content}`,
+      userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}. \n${modifyDraft}`,
       isJson: true,
     });
 

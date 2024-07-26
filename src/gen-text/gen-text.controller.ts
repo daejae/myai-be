@@ -28,7 +28,7 @@ export class GenTextController {
 
     for (let retry = 0; retry < 3; retry++) {
       try {
-        const result = await this.service.createText({
+        const result = await this.service.createTextLong({
           ...query,
           length: query.length ?? 4000,
         });
@@ -55,7 +55,7 @@ export class GenTextController {
 
     for (let retry = 0; retry < 3; retry++) {
       try {
-        const result = await this.service.createText({
+        const result = await this.service.createTextShort({
           ...query,
           length: 400,
         });
