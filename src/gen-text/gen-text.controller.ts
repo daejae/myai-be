@@ -1,4 +1,11 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Req,
+  ServiceUnavailableException,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { CustomAuthGuard } from 'src/common/guards/custom-auth.guard';
 import { GetShortTextDto } from './dto/get-short-text.dto';
@@ -19,18 +26,25 @@ export class GenTextController {
       `텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
     );
 
-    const result = await this.service.createText({
-      ...query,
-      length: query.length ?? 4000,
-    });
+    for (let retry = 0; retry < 3; retry++) {
+      try {
+        const result = await this.service.createText({
+          ...query,
+          length: query.length ?? 4000,
+        });
 
-    await this.logger.logInfo(
-      `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
-        query,
-      )} // ${JSON.stringify(result)} `,
-    );
+        await this.logger.logInfo(
+          `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
+            query,
+          )} // ${JSON.stringify(result)} `,
+        );
 
-    return result;
+        return result;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    throw new ServiceUnavailableException();
   }
 
   @UseGuards(CustomAuthGuard)
@@ -39,18 +53,25 @@ export class GenTextController {
     const user = req['user'] as User;
     await this.logger.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
 
-    // const result = await this.service.createShortText(query);
-    const result = await this.service.createText({
-      ...query,
-      length: 400,
-    });
+    for (let retry = 0; retry < 3; retry++) {
+      try {
+        const result = await this.service.createText({
+          ...query,
+          length: 400,
+        });
 
-    await this.logger.logInfo(
-      `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
-        query,
-      )} // ${JSON.stringify(result)} `,
-    );
+        await this.logger.logInfo(
+          `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
+            query,
+          )} // ${JSON.stringify(result)} `,
+        );
 
-    return result;
+        return result;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    throw new ServiceUnavailableException();
   }
 }

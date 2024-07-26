@@ -109,35 +109,50 @@ export class GenTextService {
   }
 
   async createText({ category, language, prompt, length }: GetTextDto) {
-    for (let retry = 0; retry < 3; retry++) {
-      const draft = await this.openai.createChatTest({
-        userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성.`,
-        isJson: false,
-      });
+    const draft = await this.openai.createChatTest({
+      userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
+      isJson: false,
+    });
 
-      const modifyDraft = await this.openai.createChatTest({
-        userPrompt: `오타수정 및 이야기 ${length}자 ${
-          draft.message.content.length > length
-            ? '이하로 줄여줘'
-            : '이상으로 늘려줘'
-        }. \n${draft.message.content}`,
-        isJson: false,
-      });
+    const title = await this.openai.createChatTest({
+      userPrompt: `해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘. \n${draft.message.content}`,
+      isJson: false,
+    });
 
-      const resultString = await this.openai.createChatTest({
-        userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 "title"과 "story"롤 가진다. \n${modifyDraft.message.content}`,
-        isJson: true,
-      });
+    const modifyDraft = await this.openai.createChatTest({
+      userPrompt: `오타수정 및 이야기 ${length}자 ${
+        draft.message.content.length > length
+          ? '이하로 줄여줘'
+          : '이상으로 늘려줘'
+      }. \n${draft.message.content}`,
+      isJson: false,
+    });
 
-      const result = JSON.parse(resultString.message.content);
+    const resultString = await this.openai.createChatTest({
+      userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}\n${modifyDraft.message.content}`,
+      isJson: true,
+    });
 
-      return {
-        // draft,
-        // modifyDraft,
-        // resultString,
-        // result,
-        ...result,
-      };
-    }
+    const result = JSON.parse(resultString.message.content);
+
+    await this.prisma.generatedStory.create({
+      data: {
+        category: category as GeneratedStory_category,
+        content: result.story,
+        formType: length < 1000 ? 'SHORT' : 'LONG',
+        inputPrompt: '',
+        title: result.title,
+      },
+    });
+
+    return {
+      draft,
+      title1: title,
+      modifyDraft,
+      resultString,
+      result,
+
+      ...result,
+    };
   }
 }
