@@ -146,11 +146,11 @@ export class GenTextService {
     });
 
     return {
-      draft,
-      title1: title,
-      modifyDraft,
-      resultString,
-      result,
+      // draft,
+      // title,
+      // modifyDraft,
+      // resultString,
+      // result,
 
       ...result,
     };
