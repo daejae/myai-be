@@ -51,27 +51,7 @@ export class GenTextController {
   @Get('gen-text-short')
   async getTextShort(@Req() req: Request, @Query() query: GetShortTextDto) {
     const user = req['user'] as User;
-    await this.logger.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
 
-    for (let retry = 0; retry < 3; retry++) {
-      try {
-        const result = await this.service.createTextShort({
-          ...query,
-          length: 400,
-        });
-
-        await this.logger.logInfo(
-          `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
-            query,
-          )} // ${JSON.stringify(result)} `,
-        );
-
-        return result;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    throw new ServiceUnavailableException();
+    return await this.service.createTextShort(user, query);
   }
 }

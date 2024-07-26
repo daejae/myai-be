@@ -233,36 +233,15 @@ export class OpenaiService {
   }
 
   async createChat({
-    systemPrompt,
     userPrompt,
-  }: {
-    systemPrompt: string;
-    userPrompt: string;
-  }) {
-    const completion = await this.openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-      max_tokens: 16383,
-      model: 'gpt-4o-mini',
-      response_format: { type: 'json_object' },
-    });
-
-    const result = completion.choices[0];
-    return result;
-  }
-
-  async createChatTest({
-    userPrompt,
-    isJson,
+    isJson = false,
+    model = 'gpt-4o-mini',
   }: {
     userPrompt: string;
-    isJson: boolean;
+    isJson?: boolean;
+    model?: OpenAI.Chat.ChatModel;
   }) {
+    console.log('gpt model : ' + model);
     const completion = await this.openai.chat.completions.create({
       messages: [
         {
@@ -270,8 +249,7 @@ export class OpenaiService {
           content: userPrompt,
         },
       ],
-      max_tokens: 16383,
-      model: 'gpt-4o-mini',
+      model,
       ...(isJson && { response_format: { type: 'json_object' } }),
     });
 
