@@ -256,7 +256,13 @@ export class OpenaiService {
     return result;
   }
 
-  async createChatTest({ userPrompt }: { userPrompt: string }) {
+  async createChatTest({
+    userPrompt,
+    isJson,
+  }: {
+    userPrompt: string;
+    isJson: boolean;
+  }) {
     const completion = await this.openai.chat.completions.create({
       messages: [
         {
@@ -266,7 +272,7 @@ export class OpenaiService {
       ],
       max_tokens: 16383,
       model: 'gpt-4o-mini',
-      response_format: { type: 'json_object' },
+      ...(isJson && { response_format: { type: 'json_object' } }),
     });
 
     const result = completion.choices[0];

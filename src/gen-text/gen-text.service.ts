@@ -8,6 +8,7 @@ import {
   systemPrompt_short_horror,
 } from 'src/common/constants';
 import { GeneratedStory_category } from '@prisma/client';
+import { GetTextDto } from './dto/get-long-text.dto';
 
 @Injectable()
 export class GenTextService {
@@ -34,37 +35,31 @@ export class GenTextService {
 
   async createLongText({ category, language, prompt }: GetShortTextDto) {
     for (let retry = 0; retry < 3; retry++) {
-      const draftString = await this.openai.createChat({
-        systemPrompt: systemPrompt_long_horror[0],
-        userPrompt:
-          // `${new Date()}` +
-          `(스크립트의 장르: ${category}),` +
-          `(story 길이: ${6000} 자 이상),` +
-          `(스크립트 출력 언어: ${language || 'ko'}),` +
-          `\\n 요청사항 : 최대한 길게 story 작성 (${6000}자 이상) ${
-            prompt || this.getDefaultPrompt(category)
-          }`,
+      const draftString = await this.openai.createChatTest({
+        // userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
+        userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘. 반드시 4000글 이상`,
+        isJson: false,
       });
 
-      const draft = JSON.parse(draftString.message.content);
-      const finedStory = await this.prisma.generatedStory.findFirst({
-        where: {
-          title: draft.title,
-          formType: 'LONG',
-        },
-      });
+      const draft = draftString.message.content;
+      // const finedStory = await this.prisma.generatedStory.findFirst({
+      //   where: {
+      //     title: draft,
+      //     formType: 'LONG',
+      //   },
+      // });
 
-      if (finedStory) {
-        this.logger.logInfo(
-          `롱폼 / ${category} / ${draft.title} 중복 / retry : ${retry}`,
-        );
-        continue;
-      }
+      // if (finedStory) {
+      //   this.logger.logInfo(
+      //     `롱폼 / ${category} / ${draft.title} 중복 / retry : ${retry}`,
+      //   );
+      //   continue;
+      // }
       const resultString = await this.openai.createChat({
         systemPrompt: systemPrompt_long_horror[1],
         userPrompt:
-          `story를 공백없이 ${6000}자 이상으로 내용을 확장한다, 최대한 story를 길게 확장한다, ` +
-          JSON.stringify(draft),
+          `story를 반드시 ${4000}자 이상으로 내용을 확장한다, 최대한 story를 길게 확장한다, ` +
+          draft,
       });
       const result = JSON.parse(resultString.message.content);
 
@@ -86,6 +81,7 @@ export class GenTextService {
     for (let retry = 0; retry < 3; retry++) {
       const draftString = await this.openai.createChatTest({
         userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
+        isJson: false,
       });
 
       // const draftString = await this.openai.createChat({
@@ -132,6 +128,38 @@ export class GenTextService {
       return {
         // draft,
         ...result,
+      };
+    }
+  }
+
+  async createText({ category, language, prompt, length }: GetTextDto) {
+    for (let retry = 0; retry < 3; retry++) {
+      const draft = await this.openai.createChatTest({
+        userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성.`,
+        isJson: false,
+      });
+
+      const modifyDraft = await this.openai.createChatTest({
+        userPrompt: `오타수정 및 이야기 ${length}자 ${
+          draft.message.content.length > length
+            ? '이하로 줄여줘'
+            : '이상으로 늘려줘'
+        }. \n${draft.message.content}`,
+        isJson: false,
+      });
+
+      const resultString = await this.openai.createChatTest({
+        userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 "title"과 "story"롤 가진다. \n${modifyDraft.message.content}`,
+        isJson: true,
+      });
+
+      const result = JSON.parse(resultString.message.content);
+
+      return {
+        draft,
+        modifyDraft,
+        resultString,
+        result,
       };
     }
   }

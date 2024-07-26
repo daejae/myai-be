@@ -1,12 +1,6 @@
-import {
-  IsIn,
-  IsNumber,
-  IsNumberString,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsIn, IsNumberString, IsOptional, IsString } from 'class-validator';
 
-export class GetLongTextDto {
+export class GetTextDto {
   @IsOptional()
   @IsString()
   prompt: string;

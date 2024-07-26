@@ -5,7 +5,7 @@ import { GetShortTextDto } from './dto/get-short-text.dto';
 import { User } from '@prisma/client';
 import { LoggerService } from 'src/logger/logger.service';
 import { GenTextService } from './gen-text.service';
-import { GetLongTextDto } from './dto/get-long-text.dto';
+import { GetTextDto } from './dto/get-long-text.dto';
 
 @Controller('api/web')
 export class GenTextController {
@@ -13,13 +13,16 @@ export class GenTextController {
 
   @UseGuards(CustomAuthGuard)
   @Get('gen-text')
-  async getTextLong(@Req() req: Request, @Query() query: GetLongTextDto) {
+  async getTextLong(@Req() req: Request, @Query() query: GetTextDto) {
     const user = req['user'] as User;
     await this.logger.logInfo(
-      `롱폼 텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
+      `텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
     );
 
-    const result = await this.service.createLongText(query);
+    const result = await this.service.createText({
+      ...query,
+      length: query.length ?? 4000,
+    });
 
     await this.logger.logInfo(
       `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
@@ -29,14 +32,19 @@ export class GenTextController {
 
     return result;
   }
-  generateText;
 
   @UseGuards(CustomAuthGuard)
   @Get('gen-text-short')
   async getTextShort(@Req() req: Request, @Query() query: GetShortTextDto) {
     const user = req['user'] as User;
     await this.logger.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
-    const result = await this.service.createShortText(query);
+
+    // const result = await this.service.createShortText(query);
+    const result = await this.service.createText({
+      ...query,
+      length: 400,
+    });
+
     await this.logger.logInfo(
       `텍스트 요청 완료 쇼츠 // ${user.name} // ${JSON.stringify(
         query,
