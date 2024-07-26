@@ -22,36 +22,13 @@ export class GenTextController {
   @Get('gen-text')
   async getTextLong(@Req() req: Request, @Query() query: GetTextDto) {
     const user = req['user'] as User;
-    await this.logger.logInfo(
-      `텍스트 요청 // ${user.name} // ${JSON.stringify(query)}`,
-    );
-
-    for (let retry = 0; retry < 3; retry++) {
-      try {
-        const result = await this.service.createTextLong({
-          ...query,
-          length: query.length ?? 4000,
-        });
-
-        await this.logger.logInfo(
-          `텍스트 요청 완료 // ${user.name} // ${JSON.stringify(
-            query,
-          )} // ${JSON.stringify(result)} `,
-        );
-
-        return result;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    throw new ServiceUnavailableException();
+    return await this.service.createTextLong(user, query);
   }
 
   @UseGuards(CustomAuthGuard)
   @Get('gen-text-short')
   async getTextShort(@Req() req: Request, @Query() query: GetShortTextDto) {
     const user = req['user'] as User;
-
     return await this.service.createTextShort(user, query);
   }
 }
