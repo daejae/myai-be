@@ -7,12 +7,12 @@ export class GetTextDto {
 
   @IsString()
   @IsIn([
-    'fear',
     'horror',
-    'greek_mythology',
-    'socrates',
-    'nietzsche',
-    'fairytale',
+    // 'greek_mythology',
+    // 'socrates',
+    // 'nietzsche',
+    // 'fairytale',
+    'philosophy',
   ])
   category: string;
 

@@ -3,8 +3,9 @@ import { PrismaService } from 'prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { OpenaiService } from 'src/openai/openai.service';
 import { GetShortTextDto } from './dto/get-short-text.dto';
-import { GeneratedStory_category, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { GetTextDto } from './dto/get-long-text.dto';
+import getPrompt from './const/getPrompt';
 
 @Injectable()
 export class GenTextService {
@@ -14,27 +15,21 @@ export class GenTextService {
     private logger: LoggerService,
   ) {}
 
-  async createTextLong(
-    user: User,
-    { category, language, prompt, length }: GetTextDto,
-  ) {
-    const process = async ({
-      category,
-      language,
-      prompt,
-      length,
-    }: GetTextDto) => {
+  async createTextLong(user: User, { category, language }: GetTextDto) {
+    const process = async (category, language) => {
+      const prompt = getPrompt(category, language);
+      console.log(prompt);
       const draft = await this.openai.createChat({
-        userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
+        userPrompt: prompt.categoryMessage,
         model: 'gpt-4o',
       });
 
       const title = await this.openai.createChat({
-        userPrompt: `해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘. \n${draft.message.content}`,
+        userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
       });
 
       const resultString = await this.openai.createChat({
-        userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}\n${draft.message.content}`,
+        userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
         isJson: true,
       });
 
@@ -45,16 +40,11 @@ export class GenTextService {
 
     for (let retry = 0; retry < 3; retry++) {
       try {
-        const result = await process({
-          category,
-          language,
-          prompt,
-          length: length ?? 4000,
-        });
+        const result = await process(category, language ?? 'ko');
 
         await this.prisma.generatedStory.create({
           data: {
-            category: category as GeneratedStory_category,
+            category: category,
             content: result.story,
             formType: 'LONG',
             inputPrompt: '',
@@ -74,33 +64,30 @@ export class GenTextService {
   }
 
   async createTextShort(user: User, { category, language }: GetShortTextDto) {
-    const process = async ({
-      category,
-      language,
-      prompt,
-      length,
-    }: GetTextDto) => {
+    const process = async (category, language, length) => {
+      const prompt = getPrompt(category, language);
+      console.log(prompt);
       const draft = await this.openai.createChat({
-        userPrompt: prompt,
+        userPrompt: prompt.categoryMessage,
         model: 'gpt-4o',
       });
 
       const title = await this.openai.createChat({
-        userPrompt: `해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘. \n${draft.message.content}`,
+        userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
       });
 
       let modifyDraft = draft.message.content;
 
-      while (modifyDraft.length > length) {
+      while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
         const resizeResult = await this.openai.createChat({
-          userPrompt: `이야기 줄여줘. \n ${modifyDraft}`,
+          userPrompt: `${prompt.pipelines.length} \n ${modifyDraft}`,
         });
 
         modifyDraft = resizeResult.message.content;
       }
 
       const resultString = await this.openai.createChat({
-        userPrompt: `이야기를 JSON 포맷으로 변경, JSON은 반드시 "title"과 "story"롤 가진다. "title"과 "story"는 반드시 string 타입. \n${title.message.content}. \n${modifyDraft}`,
+        userPrompt: `${prompt.pipelines.json} \n${title.message.content}. \n${modifyDraft}`,
         isJson: true,
       });
 
@@ -108,20 +95,13 @@ export class GenTextService {
     };
     await this.logger.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
 
-    const prompt = `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`;
-
     for (let retry = 0; retry < 3; retry++) {
       try {
-        const result = await process({
-          category,
-          language,
-          prompt,
-          length: 400,
-        });
+        const result = await process(category, language ?? 'ko', 400);
 
         await this.prisma.generatedStory.create({
           data: {
-            category: category as GeneratedStory_category,
+            category: category,
             content: result.story,
             formType: 'SHORT',
             inputPrompt: '',

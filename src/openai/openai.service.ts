@@ -241,7 +241,6 @@ export class OpenaiService {
     isJson?: boolean;
     model?: OpenAI.Chat.ChatModel;
   }) {
-    console.log('gpt model : ' + model);
     const completion = await this.openai.chat.completions.create({
       messages: [
         {

@@ -381,7 +381,7 @@ model GeneratedStory {
   createAt      DateTime                @default(now())
   updatedAt     DateTime                @updatedAt
   formType      GeneratedStory_formType
-  category      GeneratedStory_category
+  category      String
   inputPrompt   String                  @db.Text
   title         String                  @db.VarChar(255)
   content       String                  @db.Text
@@ -566,13 +566,4 @@ enum GenerateImage_gpuPriority {
 enum GeneratedStory_formType {
   LONG
   SHORT
-}
-
-enum GeneratedStory_category {
-  horror_test
-  horror
-  greek_mythology
-  socrates
-  nietzsche
-  fairytale
 }
