@@ -24,14 +24,18 @@ export class GenTextService {
         model: 'gpt-4o',
       });
 
-      let modifyDraft = draft.message.content;
+      const modifyDraft = draft.message.content;
+      // while (modifyDraft.length < 4000) {
+      //   const resizeResult = await this.openai.createChat({
+      //     userPrompt: `${'원본을 유지하면서 이야기 늘려줘.'} \n ${modifyDraft}`,
+      //   });
+      //   modifyDraft = resizeResult.message.content;
+      // }
 
-      while (modifyDraft.length < 4000) {
-        const resizeResult = await this.openai.createChat({
-          userPrompt: `${'이야기 늘려줘'} \n ${modifyDraft}`,
-        });
-
-        modifyDraft = resizeResult.message.content;
+      if (modifyDraft.length < 1000) {
+        throw new Error(
+          '롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length,
+        );
       }
 
       const title = await this.openai.createChat({

@@ -1,6 +1,6 @@
 const promptMap = {
   horror: {
-    ko: '한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.',
+    ko: '한국 인터넷에서 흔히 볼수 있는 공포 썰을 매우 매우 길게 작성해줘.',
     en: 'Please write a scary story similar to those commonly found on the internet.',
     jp: '日本のインターネットでよく見かける怖い話のようなエピソードを書いてください。',
   },
