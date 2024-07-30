@@ -18,18 +18,28 @@ export class GenTextService {
   async createTextLong(user: User, { category, language }: GetTextDto) {
     const process = async (category, language) => {
       const prompt = getPrompt(category, language);
-      console.log(prompt);
+
       const draft = await this.openai.createChat({
         userPrompt: prompt.categoryMessage,
         model: 'gpt-4o',
       });
 
+      let modifyDraft = draft.message.content;
+
+      while (modifyDraft.length < 4000) {
+        const resizeResult = await this.openai.createChat({
+          userPrompt: `${'이야기 늘려줘'} \n ${modifyDraft}`,
+        });
+
+        modifyDraft = resizeResult.message.content;
+      }
+
       const title = await this.openai.createChat({
-        userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
+        userPrompt: `${prompt.pipelines.title} \n${modifyDraft}`,
       });
 
       const resultString = await this.openai.createChat({
-        userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
+        userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
         isJson: true,
       });
 
@@ -64,9 +74,9 @@ export class GenTextService {
   }
 
   async createTextShort(user: User, { category, language }: GetShortTextDto) {
-    const process = async (category, language, length) => {
+    const process = async (category, language) => {
       const prompt = getPrompt(category, language);
-      console.log(prompt);
+
       const draft = await this.openai.createChat({
         userPrompt: prompt.categoryMessage,
         model: 'gpt-4o',
@@ -97,7 +107,7 @@ export class GenTextService {
 
     for (let retry = 0; retry < 3; retry++) {
       try {
-        const result = await process(category, language ?? 'ko', 400);
+        const result = await process(category, language ?? 'ko');
 
         await this.prisma.generatedStory.create({
           data: {
