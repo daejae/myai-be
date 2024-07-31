@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { OpenaiService } from 'src/openai/openai.service';
@@ -84,6 +88,7 @@ export class GenTextService {
         console.log(e);
       }
     }
+    throw new InternalServerErrorException();
   }
 
   async createTextShortPhilosophy(
@@ -151,6 +156,7 @@ export class GenTextService {
         console.log(e);
       }
     }
+    throw new InternalServerErrorException();
   }
 
   async createTextLong(user: User, { category, language }: GetTextDto) {
@@ -206,6 +212,7 @@ export class GenTextService {
         console.log(e);
       }
     }
+    throw new InternalServerErrorException();
   }
 
   async createTextShort(user: User, { category, language }: GetShortTextDto) {
@@ -265,5 +272,6 @@ export class GenTextService {
         console.log(e);
       }
     }
+    throw new InternalServerErrorException();
   }
 }

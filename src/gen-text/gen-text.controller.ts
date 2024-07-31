@@ -23,10 +23,12 @@ export class GenTextController {
   async getTextLong(@Req() req: Request, @Query() query: GetTextDto) {
     const user = req['user'] as User;
 
-    if (query.category == 'philosophy')
-      return await this.service.createTextLongPhilosophy(user, query);
-
-    return await this.service.createTextLong(user, query);
+    switch (query.category) {
+      case 'philosophy':
+        return await this.service.createTextLongPhilosophy(user, query);
+      default:
+        return await this.service.createTextLong(user, query);
+    }
   }
 
   @UseGuards(CustomAuthGuard)
@@ -34,9 +36,11 @@ export class GenTextController {
   async getTextShort(@Req() req: Request, @Query() query: GetShortTextDto) {
     const user = req['user'] as User;
 
-    if (query.category == 'philosophy')
-      return await this.service.createTextShortPhilosophy(user, query);
-
-    return await this.service.createTextShort(user, query);
+    switch (query.category) {
+      case 'philosophy':
+        return await this.service.createTextShortPhilosophy(user, query);
+      default:
+        return await this.service.createTextShort(user, query);
+    }
   }
 }
