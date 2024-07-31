@@ -22,6 +22,10 @@ export class GenTextController {
   @Get('gen-text')
   async getTextLong(@Req() req: Request, @Query() query: GetTextDto) {
     const user = req['user'] as User;
+
+    if (query.category == 'philosophy')
+      return await this.service.createTextLongPhilosophy(user, query);
+
     return await this.service.createTextLong(user, query);
   }
 
@@ -29,6 +33,10 @@ export class GenTextController {
   @Get('gen-text-short')
   async getTextShort(@Req() req: Request, @Query() query: GetShortTextDto) {
     const user = req['user'] as User;
+
+    if (query.category == 'philosophy')
+      return await this.service.createTextShortPhilosophy(user, query);
+
     return await this.service.createTextShort(user, query);
   }
 }
