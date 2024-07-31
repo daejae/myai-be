@@ -69,8 +69,7 @@ export const getLongPhilosophy = async (
     userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
     isJson: true,
   });
-  console.log(philosopher);
-  console.log(theory);
+
   return JSON.parse(resultString.message.content);
 };
 
