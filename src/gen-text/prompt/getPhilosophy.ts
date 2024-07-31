@@ -1,21 +1,58 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
 
+const philosopherList = [
+  '이마누엘 칸트',
+  '아리스토텔레스 ',
+  '존 스튜어트 밀',
+  '플라톤 ',
+  '소크라테스',
+  '프리드리히 니체',
+  '존 롤스 ',
+  '마이클 샌델',
+  '제레미 벤담',
+  '데이비드 흄',
+  '토마스 아퀴나스',
+  '토마스 홉스',
+  '장자크 루소',
+  '피터 싱어',
+  '앨리자베스 앤스콤',
+  '버나드 윌리엄스',
+  '에픽테토스',
+  '에피쿠로스',
+  '스피노자',
+  '존 로크',
+  '알랭 바디우',
+  '길버트 하먼',
+  '맥스 셸러',
+  '이삭 아시모프',
+  '공자',
+  '맹자',
+  '노자 ',
+  '퇴계이황 ',
+  '율곡 ',
+];
+
+const getRandomPhilosopher = (philosophers: string[]) => {
+  const randomIndex = Math.floor(Math.random() * philosophers.length);
+  return philosophers[randomIndex];
+};
+
 export const getLongPhilosophy = async (
   openai: OpenaiService,
   category: string,
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
+  const philosopher = getRandomPhilosopher(philosopherList);
 
   const theory = await openai.createChat({
-    userPrompt: `1. 세계 모든 철학자의 이름(최소20명)에서 무작위(중요)로 1명의 철학자를 선정한다.
-2. 선정된 철학자의 모든 이론에서 무작위(중요)로 1개의 이론을 선정한다.
-3. 선정된 철학자와 이론에 대해서 매우 간단하게 출력한다.`,
+    userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
+    model: 'gpt-4o',
   });
 
   const draft = await openai.createChat({
-    userPrompt: `해당 이론을 바탕으로 사람들에게 메세지를 전달하는 썰(이야기)를 매우 매우 길게 작성해줘. \n${theory.message.content}`,
+    userPrompt: `해당 이론을 바탕으로 사람들에게 메시지를 전달하는 재미있는 썰을 1개만 매우 길게 작성해줘.  \n${theory.message.content}`,
     model: 'gpt-4o',
   });
 
@@ -32,7 +69,8 @@ export const getLongPhilosophy = async (
     userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
     isJson: true,
   });
-
+  console.log(philosopher);
+  console.log(theory);
   return JSON.parse(resultString.message.content);
 };
 
@@ -42,15 +80,15 @@ export const getShortPhilosophy = async (
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
+  const philosopher = getRandomPhilosopher(philosopherList);
 
   const theory = await openai.createChat({
-    userPrompt: `1. 세계 모든 철학자의 이름(최소20명)에서 무작위(중요)로 1명의 철학자를 선정한다.
-2. 선정된 철학자의 모든 이론에서 무작위(중요)로 1개의 이론을 선정한다.
-3. 선정된 철학자와 이론에 대해서 매우 간단하게 출력한다.`,
+    userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
+    model: 'gpt-4o',
   });
 
   const draft = await openai.createChat({
-    userPrompt: `해당 이론을 바탕으로 사람들에게 메세지를 전달하는 썰(이야기)를 작성해줘. \n${theory.message.content}`,
+    userPrompt: `해당 이론을 바탕으로 사람들에게 메시지를 전달하는 재미있는 썰을 1개만 매우 길게 작성해줘.  \n${theory.message.content}`,
     model: 'gpt-4o',
   });
 
