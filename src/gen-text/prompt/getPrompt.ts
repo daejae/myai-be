@@ -40,10 +40,7 @@ interface PromptResponse {
   };
 }
 
-export default function getPrompt(
-  category: string,
-  language: string,
-): PromptResponse {
+export default function (category: string, language: string): PromptResponse {
   let categoryMessage = `${category} 썰 작성해줘.`;
   const pipelines: { [key: string]: string } = {};
 
