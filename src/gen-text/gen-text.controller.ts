@@ -38,7 +38,7 @@ export class GenTextController {
     return await this.service.createText(user, {
       category: query.category,
       language: query.language,
-      isLong: true,
+      isLong: false,
     });
   }
 }
