@@ -1,6 +1,10 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
 
+const getRandomYear = (min = 100, max = 2000): number => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 export const getLongScience = async (
   openai: OpenaiService,
   category: string,
@@ -9,7 +13,7 @@ export const getLongScience = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 과학적 발견에 대한 재미있는 썰을 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘.`,
     model: 'gpt-4o',
   });
 
@@ -38,7 +42,7 @@ export const getShortScience = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 과학적 발견에 대한 재미있는 썰을 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘.`,
     model: 'gpt-4o',
   });
 
