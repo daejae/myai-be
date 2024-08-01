@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import getCurrentDateFormatted from 'src/common/utils/getCurrentDateFormatted';
 
 export const getShortHoroscope = async (
   openai: OpenaiService,
@@ -9,7 +10,7 @@ export const getShortHoroscope = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `${2022}의 오행에 대한 정보를 썰로 짧게 작성해줘.`,
+    userPrompt: `${getCurrentDateFormatted()}의 오행에 대한 정보를 썰로 짧게 작성해줘.`,
     model: 'gpt-4o',
   });
 
