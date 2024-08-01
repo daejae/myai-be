@@ -9,7 +9,7 @@ export const getLongPsychology = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 심리학에 대한 재미있는 썰을 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 심리학에 대한 재미있는 썰을 길게 작성해줘.`,
     model: 'gpt-4o',
   });
 
