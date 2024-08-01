@@ -3,8 +3,16 @@ import { PrismaService } from 'prisma/prisma.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { OpenaiService } from 'src/openai/openai.service';
 import { User } from '@prisma/client';
-import { getLongPhilosophy, getShortPhilosophy } from './prompt/getPhilosophy';
-import { getLongHorror, getShortHorror } from './prompt/getHorror';
+import { getLongPhilosophy, getShortPhilosophy } from './prompt/philosophy';
+import { getLongHorror, getShortHorror } from './prompt/horror';
+import { getLongHistory, getShortHistory } from './prompt/history';
+import { getLongScience, getShortScience } from './prompt/science';
+import { getLongArt, getShortArt } from './prompt/art';
+import { getLongPsychology, getShortPsychology } from './prompt/psychology';
+import { getLongTrivia, getShortTrivia } from './prompt/trivia';
+import { getShortHoroscope } from './prompt/horoscope';
+import { getShortPet } from './prompt/pet';
+import { getLongFolktale, getShortFolktale } from './prompt/folktale';
 
 @Injectable()
 export class GenTextService {
@@ -20,6 +28,24 @@ export class GenTextService {
         return isLong ? getLongHorror : getShortHorror;
       case 'philosophy':
         return isLong ? getLongPhilosophy : getShortPhilosophy;
+      case 'history':
+        return isLong ? getLongHistory : getShortHistory;
+      case 'science':
+        return isLong ? getLongScience : getShortScience;
+      case 'art':
+        return isLong ? getLongArt : getShortArt;
+      case 'psychology':
+        return isLong ? getLongPsychology : getShortPsychology;
+      case 'trivia':
+        return isLong ? getLongTrivia : getShortTrivia;
+      case 'folktale':
+        return isLong ? getLongFolktale : getShortFolktale;
+
+      // 숏폼 전용
+      case 'horoscope':
+        return getShortHoroscope;
+      case 'pet':
+        return getShortPet;
     }
   }
 

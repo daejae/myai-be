@@ -6,7 +6,18 @@ export class GetShortTextDto {
   prompt: string;
 
   @IsString()
-  @IsIn(['horror', 'philosophy'])
+  @IsIn([
+    'horror',
+    'philosophy',
+    'history',
+    'science',
+    'art',
+    'psychology',
+    'trivia',
+    'horoscope',
+    'pet',
+    'folktale',
+  ])
   category: string;
 
   @IsOptional()

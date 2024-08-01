@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import getRandomElement from 'src/common/utils/getRandomElement';
 
 const philosopherList = [
   '이마누엘 칸트',
@@ -33,18 +34,13 @@ const philosopherList = [
   '율곡 ',
 ];
 
-const getRandomPhilosopher = (philosophers: string[]) => {
-  const randomIndex = Math.floor(Math.random() * philosophers.length);
-  return philosophers[randomIndex];
-};
-
 export const getLongPhilosophy = async (
   openai: OpenaiService,
   category: string,
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const philosopher = getRandomPhilosopher(philosopherList);
+  const philosopher = getRandomElement(philosopherList);
 
   const theory = await openai.createChat({
     userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
@@ -79,7 +75,7 @@ export const getShortPhilosophy = async (
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const philosopher = getRandomPhilosopher(philosopherList);
+  const philosopher = getRandomElement(philosopherList);
 
   const theory = await openai.createChat({
     userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
