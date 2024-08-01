@@ -9,7 +9,7 @@ export const getLongTrivia = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 쓸모없지만 알아두면 재미있는 상식 썰을 매우매우 길게 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 쓸모없지만 알아두면 재미있는 상식 썰 1개를 매우매우 길게 작성해줘. 썰만 출력.`,
     model: 'gpt-4o',
   });
 
@@ -38,7 +38,7 @@ export const getShortTrivia = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 쓸모없지만 알아두면 재미있는 상식 썰을 매우매우 길게 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 쓸모없지만 알아두면 재미있는 상식 썰 1개를 길게 작성해줘.`,
     model: 'gpt-4o',
   });
 

@@ -13,7 +13,7 @@ export const getLongScience = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘. 썰만 출력.`,
     model: 'gpt-4o',
   });
 
