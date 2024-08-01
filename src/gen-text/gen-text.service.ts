@@ -11,7 +11,7 @@ import { getLongArt, getShortArt } from './prompt/art';
 import { getLongPsychology, getShortPsychology } from './prompt/psychology';
 import { getLongTrivia, getShortTrivia } from './prompt/trivia';
 import { getShortHoroscope } from './prompt/horoscope';
-import { getShortPet } from './prompt/pet';
+import { getShortDogFood } from './prompt/dogFood';
 import { getLongFolktale, getShortFolktale } from './prompt/folktale';
 
 @Injectable()
@@ -28,24 +28,24 @@ export class GenTextService {
         return isLong ? getLongHorror : getShortHorror;
       case 'philosophy':
         return isLong ? getLongPhilosophy : getShortPhilosophy;
-      case 'history':
+      case 'History':
         return isLong ? getLongHistory : getShortHistory;
-      case 'science':
+      case 'Science':
         return isLong ? getLongScience : getShortScience;
-      case 'art':
+      case 'Art':
         return isLong ? getLongArt : getShortArt;
-      case 'psychology':
+      case 'Psychology':
         return isLong ? getLongPsychology : getShortPsychology;
-      case 'trivia':
+      case 'Trivia':
         return isLong ? getLongTrivia : getShortTrivia;
-      case 'folktale':
+      case 'Folktale':
         return isLong ? getLongFolktale : getShortFolktale;
 
       // 숏폼 전용
-      case 'horoscope':
+      case 'Horoscope':
         return getShortHoroscope;
-      case 'pet':
-        return getShortPet;
+      case 'DogFood':
+        return getShortDogFood;
     }
   }
 

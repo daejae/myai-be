@@ -9,12 +9,12 @@ export class GetTextDto {
   @IsIn([
     'horror',
     'philosophy',
-    'history',
-    'science',
-    'art',
-    'psychology',
-    'trivia',
-    'folktale',
+    'History',
+    'Science',
+    'Art',
+    'Psychology',
+    'Trivia',
+    'Folktale',
   ])
   category: string;
 

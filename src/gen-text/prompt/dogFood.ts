@@ -27,7 +27,7 @@ const foods = [
   '오트밀',
 ];
 
-export const getShortPet = async (
+export const getShortDogFood = async (
   openai: OpenaiService,
   category: string,
   language: string,

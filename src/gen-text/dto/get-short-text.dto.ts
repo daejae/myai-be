@@ -9,14 +9,14 @@ export class GetShortTextDto {
   @IsIn([
     'horror',
     'philosophy',
-    'history',
-    'science',
-    'art',
-    'psychology',
-    'trivia',
-    'horoscope',
-    'pet',
-    'folktale',
+    'History',
+    'Science',
+    'Art',
+    'Psychology',
+    'Trivia',
+    'Horoscope',
+    'Folktale',
+    'DogFood',
   ])
   category: string;
 
