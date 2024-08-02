@@ -34,7 +34,7 @@ export const getLongHistory = async (
   const country = getRandomElement(countries);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${country} 역사적 사건에 대한 재미있는 썰을 길게 작성해줘`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${country} 역사적 사건에 대한 재미있는 썰을 길게 작성해줘. 썰만 출력.`,
     model: 'gpt-4o',
   });
 
@@ -64,7 +64,7 @@ export const getShortHistory = async (
   const country = '영국';
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${country} 역사적 사건에 대한 재미있는 썰을 작성해줘`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${country} 역사적 사건에 대한 재미있는 썰을 작성해줘. 썰만 출력.`,
     model: 'gpt-4o',
   });
 
