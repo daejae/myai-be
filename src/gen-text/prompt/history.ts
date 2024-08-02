@@ -34,14 +34,9 @@ export const getLongHistory = async (
   const country = getRandomElement(countries);
 
   const draft = await openai.createChat({
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${country} 역사적 사건에 대한 재미있는 썰을 길게 작성해줘. 썰만 출력.`,
+    userPrompt: `인터넷에서 흔히 볼 수 있는 ${'영국'} 역사적 사건에 대한 재미있는 썰을 매우 길게 작성해줘. 썰만 출력.`,
     model: 'gpt-4o',
   });
-
-  const modifyDraft = draft.message.content;
-  if (modifyDraft.length < 1000) {
-    throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
-  }
 
   const title = await openai.createChat({
     userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
@@ -51,6 +46,10 @@ export const getLongHistory = async (
     userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
     isJson: true,
   });
+
+  const resultLength = resultString.message.content.length;
+  if (resultLength < 1000)
+    throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + resultLength);
 
   return JSON.parse(resultString.message.content);
 };
