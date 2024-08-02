@@ -54,7 +54,9 @@ export const getLongPhilosophy = async (
 
   const modifyDraft = draft.message.content;
   if (modifyDraft.length < 1000) {
-    throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
+    throw new Error(
+      '롱폼(철학자) 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length,
+    );
   }
 
   const title = await openai.createChat({
