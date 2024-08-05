@@ -17,6 +17,7 @@ export class GetShortTextDto {
     'Horoscope',
     'Folktale',
     'DogFood',
+    'ScienceTest',
   ])
   category: string;
 

@@ -13,6 +13,7 @@ import { getLongTrivia, getShortTrivia } from './prompt/trivia';
 import { getShortHoroscope } from './prompt/horoscope';
 import { getShortDogFood } from './prompt/dogFood';
 import { getLongFolktale, getShortFolktale } from './prompt/folktale';
+import { getLongScienceTest, getShortScienceTest } from './prompt/scienceTest';
 
 @Injectable()
 export class GenTextService {
@@ -46,6 +47,10 @@ export class GenTextService {
         return getShortHoroscope;
       case 'DogFood':
         return getShortDogFood;
+
+      // Test 전용
+      case 'ScienceTest':
+        return isLong ? getLongScienceTest : getShortScienceTest;
     }
   }
 
