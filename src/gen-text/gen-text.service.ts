@@ -6,14 +6,13 @@ import { User } from '@prisma/client';
 import { getLongPhilosophy, getShortPhilosophy } from './prompt/philosophy';
 import { getLongHorror, getShortHorror } from './prompt/horror';
 import { getLongHistory, getShortHistory } from './prompt/history';
-import { getLongScience, getShortScience } from './prompt/science';
 import { getLongArt, getShortArt } from './prompt/art';
 import { getLongPsychology, getShortPsychology } from './prompt/psychology';
 import { getLongTrivia, getShortTrivia } from './prompt/trivia';
 import { getShortHoroscope } from './prompt/horoscope';
 import { getShortDogFood } from './prompt/dogFood';
 import { getLongFolktale, getShortFolktale } from './prompt/folktale';
-import { getLongScienceTest, getShortScienceTest } from './prompt/scienceTest';
+import { getLongScience, getShortScience } from './prompt/science';
 
 @Injectable()
 export class GenTextService {
@@ -47,10 +46,6 @@ export class GenTextService {
         return getShortHoroscope;
       case 'DogFood':
         return getShortDogFood;
-
-      // Test 전용
-      case 'ScienceTest':
-        return isLong ? getLongScienceTest : getShortScienceTest;
     }
   }
 
@@ -77,7 +72,7 @@ export class GenTextService {
           data: {
             category: category,
             content: result.story,
-            formType: 'SHORT',
+            formType: isLong ? 'LONG' : 'SHORT',
             inputPrompt: '',
             title: result.title,
           },

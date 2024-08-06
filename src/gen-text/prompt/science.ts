@@ -13,22 +13,30 @@ export const getLongScience = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    // userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘. 썰만 출력.`,
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 길게 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
+    userPrompt: `Tell me one interesting story about a scientific discovery from ${getRandomYear()}`,
     model: 'gpt-4o',
+  });
+
+  const tranlate = await openai.createChat({
+    userPrompt: `해당 이야기를 한국 인터넷에서 흔히 볼 수 있는 재미있는 썰로 매우 길게 수정 또는 재작성해줘.\n${draft.message.content}`,
+    model: 'gpt-4o',
+  });
+
+  const modifyDraft = tranlate.message.content;
+  if (modifyDraft.length < 1000) {
+    throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
+  }
+
+  const title = await openai.createChat({
+    userPrompt: `${prompt.pipelines.title} \n${modifyDraft}`,
+  });
+
+  const resultString = await openai.createChat({
+    userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
     isJson: true,
   });
 
-  const result: { title: string; story: string } = JSON.parse(
-    draft.message.content,
-  );
-
-  if (result.story.length < 1000)
-    throw new Error(
-      '롱폼(과학) 생성된 텍스트가 너무 짧음 : ' + result.story.length,
-    );
-
-  return result;
+  return JSON.parse(resultString.message.content);
 };
 
 export const getShortScience = async (
@@ -37,30 +45,34 @@ export const getShortScience = async (
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-
-  const draft = await openai.createChat({
-    // userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 매우 길게 작성해줘.`,
-    userPrompt: `인터넷에서 흔히 볼 수 있는 ${getRandomYear()}년 과학적 발견에 대한 재미있는 썰을 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
+  let draft = await openai.createChat({
+    userPrompt: `Tell me one interesting story about a scientific discovery from ${getRandomYear()}`,
     model: 'gpt-4o',
+  });
+
+  draft = await openai.createChat({
+    userPrompt: `해당 이야기를 한국 인터넷에서 흔히 볼 수 있는 재미있는 썰로 매우 길게 수정 또는 재작성해줘.\n${draft.message.content}`,
+    model: 'gpt-4o',
+  });
+
+  const title = await openai.createChat({
+    userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
+  });
+
+  let modifyDraft = draft.message.content;
+
+  while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
+    const resizeResult = await openai.createChat({
+      userPrompt: `${prompt.pipelines.length} \n ${modifyDraft}`,
+    });
+
+    modifyDraft = resizeResult.message.content;
+  }
+
+  const resultString = await openai.createChat({
+    userPrompt: `${prompt.pipelines.json} \n${title.message.content}. \n${modifyDraft}`,
     isJson: true,
   });
 
-  const result: { title: string; story: string } = JSON.parse(
-    draft.message.content,
-  );
-
-  let modifyDraft = result;
-
-  while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
-    const resizeResult = await openai.createChat({
-      userPrompt: `JSON 포맷은 유지하고 story 줄여줘.\n${JSON.stringify(
-        modifyDraft,
-      )}`,
-      isJson: true,
-    });
-
-    modifyDraft = JSON.parse(resizeResult.message.content);
-  }
-
-  return modifyDraft;
+  return JSON.parse(resultString.message.content);
 };
