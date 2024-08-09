@@ -52,13 +52,6 @@ export const getLongPhilosophy = async (
     model: 'gpt-4o',
   });
 
-  const modifyDraft = draft.message.content;
-  if (modifyDraft.length < 1000) {
-    throw new Error(
-      '롱폼(철학자) 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length,
-    );
-  }
-
   const title = await openai.createChat({
     userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
   });
@@ -67,6 +60,13 @@ export const getLongPhilosophy = async (
     userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
     isJson: true,
   });
+
+  const resultStringLenght = resultString.message.content.length;
+  if (resultStringLenght < 1000) {
+    throw new Error(
+      '롱폼(철학자) 생성된 텍스트가 너무 짧음 : ' + resultStringLenght,
+    );
+  }
 
   return JSON.parse(resultString.message.content);
 };
