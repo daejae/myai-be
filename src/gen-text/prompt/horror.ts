@@ -15,7 +15,9 @@ export const getLongHorror = async (
 
   const modifyDraft = draft.message.content;
   if (modifyDraft.length < 1000) {
-    throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
+    throw new Error(
+      '롱폼(공포) 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length,
+    );
   }
 
   const title = await openai.createChat({
@@ -63,5 +65,14 @@ export const getShortHorror = async (
     isJson: true,
   });
 
-  return JSON.parse(resultString.message.content);
+  const result: { title: string; story: string } = JSON.parse(
+    resultString.message.content,
+  );
+
+  if (result.story.length > 420)
+    throw new Error(
+      '숏폼(공포) 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length,
+    );
+
+  return result;
 };
