@@ -26,7 +26,7 @@ const foods = [
   '오트밀',
 ];
 
-const indexFilePath = path.join(__dirname, 'currentIndex.txt');
+const indexFilePath = path.join(__dirname, 'dogFoodCurrentIndex.txt');
 
 function loadIndex(): number {
   if (fs.existsSync(indexFilePath)) {

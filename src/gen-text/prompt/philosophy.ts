@@ -1,6 +1,7 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
-import getRandomElement from 'src/common/utils/getRandomElement';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const philosopherList = [
   '이마누엘 칸트',
@@ -34,13 +35,35 @@ const philosopherList = [
   '율곡 ',
 ];
 
+const indexFilePath = path.join(__dirname, 'philosopherCurrentIndex.txt');
+
+function loadIndex(): number {
+  if (fs.existsSync(indexFilePath)) {
+    const savedIndex = fs.readFileSync(indexFilePath, 'utf-8');
+    return parseInt(savedIndex, 10);
+  }
+  return 0;
+}
+
+function saveIndex(index: number): void {
+  fs.writeFileSync(indexFilePath, index.toString());
+}
+
+export function getNextPhilosopher(): string {
+  let currentIndex = loadIndex();
+  const food = philosopherList[currentIndex];
+  currentIndex = (currentIndex + 1) % philosopherList.length;
+  saveIndex(currentIndex);
+  return food;
+}
+
 export const getLongPhilosophy = async (
   openai: OpenaiService,
   category: string,
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const philosopher = getRandomElement(philosopherList);
+  const philosopher = getNextPhilosopher();
 
   const theory = await openai.createChat({
     userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
@@ -77,7 +100,7 @@ export const getShortPhilosophy = async (
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const philosopher = getRandomElement(philosopherList);
+  const philosopher = getNextPhilosopher();
 
   const theory = await openai.createChat({
     userPrompt: `철학자 ${philosopher}의 모든 이론 중 랜덤으로 한개만 골라서 간단하게 설명해줘.`,
@@ -85,7 +108,7 @@ export const getShortPhilosophy = async (
   });
 
   const draft = await openai.createChat({
-    userPrompt: `해당 이론을 바탕으로 사람들에게 메시지를 전달하는 재미있는 썰을 1개만 매우 길게 작성해줘.  \n${theory.message.content}`,
+    userPrompt: `해당 이론을 바탕으로 사람들에게 메시지를 전달하는 재미있는 썰을 1개만 작성해줘.  \n${theory.message.content}`,
     model: 'gpt-4o',
   });
 
