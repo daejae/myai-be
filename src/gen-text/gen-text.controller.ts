@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  Req,
-  ServiceUnavailableException,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { CustomAuthGuard } from 'src/common/guards/custom-auth.guard';
 import { GetShortTextDto } from './dto/get-short-text.dto';
@@ -28,6 +21,28 @@ export class GenTextController {
       language: query.language,
       isLong: true,
     });
+  }
+
+  @UseGuards(CustomAuthGuard)
+  @Get('gen-text-merge')
+  async getTextLongMerge(@Req() req: Request, @Query() query: GetTextDto) {
+    const user = req['user'] as User;
+
+    const result: { title: string; story: string }[] = [];
+
+    while (true) {
+      result.push(
+        await this.service.createText(user, {
+          category: query.category,
+          language: query.language,
+          isLong: true,
+        }),
+      );
+      if (result.reduce((sum, current) => sum + current.story.length, 0) > 4000)
+        break;
+    }
+
+    return result;
   }
 
   @UseGuards(CustomAuthGuard)
