@@ -38,7 +38,7 @@ export class GenTextController {
           isLong: true,
         }),
       );
-      if (result.reduce((sum, current) => sum + current.story.length, 0) > 5000)
+      if (result.reduce((sum, current) => sum + current.story.length, 0) > 6000)
         break;
     }
 
