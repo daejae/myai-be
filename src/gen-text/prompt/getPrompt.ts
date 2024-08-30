@@ -11,7 +11,7 @@ const promptMap = {
   },
   pipeline: {
     title: {
-      ko: '해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘.',
+      ko: '해당 이야기를 바탕으로 업로드 되어질 영상의 제목을 추천해줘, 유튜브 영상의 제목으로 가장 적절한 제목 1개만 알려줘. 길이는 반드시 20자 이하.',
       en: 'Please recommend a title for the video to be uploaded based on this story. Provide the most appropriate title for a YouTube video.',
       jp: 'この話をもとにアップロードされる動画のタイトルを推薦してください。YouTube動画のタイトルとして最も適切なタイトルを1つ教えてください。',
     },

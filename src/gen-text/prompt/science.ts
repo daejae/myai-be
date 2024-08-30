@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import { getStoryTitle } from './title';
 
 const getRandomYear = (min = 100, max = 2000): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -27,12 +28,14 @@ export const getLongScience = async (
     throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
   }
 
-  const title = await openai.createChat({
-    userPrompt: `${prompt.pipelines.title} \n${modifyDraft}`,
-  });
+  const title = await getStoryTitle(
+    openai,
+    prompt.pipelines.title,
+    draft.message.content,
+  );
 
   const resultString = await openai.createChat({
-    userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
+    userPrompt: `${prompt.pipelines.json} \n${title}\n${modifyDraft}`,
     isJson: true,
   });
 
@@ -55,9 +58,11 @@ export const getShortScience = async (
     model: 'gpt-4o',
   });
 
-  const title = await openai.createChat({
-    userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  });
+  const title = await getStoryTitle(
+    openai,
+    prompt.pipelines.title,
+    draft.message.content,
+  );
 
   let modifyDraft = draft.message.content;
 
@@ -70,7 +75,7 @@ export const getShortScience = async (
   }
 
   const resultString = await openai.createChat({
-    userPrompt: `${prompt.pipelines.json} \n${title.message.content}. \n${modifyDraft}`,
+    userPrompt: `${prompt.pipelines.json} \n${title}. \n${modifyDraft}`,
     isJson: true,
   });
 

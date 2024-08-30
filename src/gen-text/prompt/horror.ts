@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import { getStoryTitle } from './title';
 
 export const getLongHorror = async (
   openai: OpenaiService,
@@ -20,12 +21,14 @@ export const getLongHorror = async (
     );
   }
 
-  const title = await openai.createChat({
-    userPrompt: `${prompt.pipelines.title} \n${modifyDraft}`,
-  });
+  const title = await getStoryTitle(
+    openai,
+    prompt.pipelines.title,
+    draft.message.content,
+  );
 
   const resultString = await openai.createChat({
-    userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
+    userPrompt: `${prompt.pipelines.json} \n${title}\n${modifyDraft}`,
     isJson: true,
   });
 
@@ -47,9 +50,11 @@ export const getShortHorror = async (
     model: 'gpt-4o',
   });
 
-  const title = await openai.createChat({
-    userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  });
+  const title = await getStoryTitle(
+    openai,
+    prompt.pipelines.title,
+    draft.message.content,
+  );
 
   const modifyDraft = draft.message.content;
   // while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
@@ -61,7 +66,7 @@ export const getShortHorror = async (
   // }
 
   const resultString = await openai.createChat({
-    userPrompt: `${prompt.pipelines.json} \n${title.message.content}. \n${modifyDraft}`,
+    userPrompt: `${prompt.pipelines.json} \n${title}. \n${modifyDraft}`,
     isJson: true,
   });
 
