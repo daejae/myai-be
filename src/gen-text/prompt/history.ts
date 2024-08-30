@@ -1,6 +1,7 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
 import getRandomElement from 'src/common/utils/getRandomElement';
+import { getStoryTitle } from './title';
 
 const countries = [
   '독일',
@@ -42,27 +43,14 @@ export const getLongHistory = async (
   const result: { title: string; story: string } = JSON.parse(
     draft.message.content,
   );
-  const resultLength = result.story.length;
 
-  if (resultLength < 1000)
-    throw new Error('롱폼(역사) 생성된 텍스트가 너무 짧음 : ' + resultLength);
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
 
-  return result;
+  if (story.length < 1000)
+    throw new Error('롱폼(역사) 생성된 텍스트가 너무 짧음 : ' + story.length);
 
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
-  //   isJson: true,
-  // });
-
-  // const resultLength = resultString.message.content.length;
-  // if (resultLength < 1000)
-  //   throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + resultLength);
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story };
 };
 
 export const getShortHistory = async (
@@ -83,6 +71,9 @@ export const getShortHistory = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -96,15 +87,5 @@ export const getShortHistory = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
-  //   isJson: true,
-  // });
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story: modifyDraft.story };
 };

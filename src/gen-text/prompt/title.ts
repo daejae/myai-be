@@ -14,9 +14,6 @@ export const getStoryTitle = async (
     });
 
     title = reuslt.message.content;
-    console.log(title.length);
-    console.log(title);
-
     if (title.length <= outputLenght) break;
   }
 

@@ -1,6 +1,7 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
 import getRandomElement from 'src/common/utils/getRandomElement';
+import { getStoryTitle } from './title';
 
 const countries = [
   '독일',
@@ -43,12 +44,15 @@ export const getLongFolktale = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   if (result.story.length < 1000)
     throw new Error(
       '롱폼(동화) 생성된 텍스트가 너무 짧음 : ' + result.story.length,
     );
 
-  return result;
+  return { title, story };
 };
 
 export const getShortFolktale = async (
@@ -69,6 +73,9 @@ export const getShortFolktale = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -82,5 +89,5 @@ export const getShortFolktale = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
+  return { title, story: modifyDraft.story };
 };

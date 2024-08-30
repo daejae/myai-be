@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import { getStoryTitle } from './title';
 
 export const getLongTrivia = async (
   openai: OpenaiService,
@@ -18,12 +19,13 @@ export const getLongTrivia = async (
     draft.message.content,
   );
 
-  if (result.story.length < 1000)
-    throw new Error(
-      '롱폼(잡학) 생성된 텍스트가 너무 짧음 : ' + result.story.length,
-    );
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
 
-  return result;
+  if (story.length < 1000)
+    throw new Error('롱폼(잡학) 생성된 텍스트가 너무 짧음 : ' + story.length);
+
+  return { title, story };
 };
 
 export const getShortTrivia = async (
@@ -43,6 +45,9 @@ export const getShortTrivia = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -56,5 +61,5 @@ export const getShortTrivia = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
+  return { title, story: modifyDraft.story };
 };

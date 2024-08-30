@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import { getStoryTitle } from './title';
 
 export const getLongArt = async (
   openai: OpenaiService,
@@ -18,28 +19,13 @@ export const getLongArt = async (
     draft.message.content,
   );
 
-  if (result.story.length < 1000)
-    throw new Error(
-      '롱폼(예술) 생성된 텍스트가 너무 짧음 : ' + result.story.length,
-    );
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
 
-  return result;
+  if (story.length < 1000)
+    throw new Error('롱폼(예술) 생성된 텍스트가 너무 짧음 : ' + story.length);
 
-  // const modifyDraft = draft.message.content;
-  // if (modifyDraft.length < 1000) {
-  //   throw new Error('롱폼 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
-  // }
-
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
-  //   isJson: true,
-  // });
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story };
 };
 
 export const getShortArt = async (
@@ -59,6 +45,9 @@ export const getShortArt = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -72,26 +61,5 @@ export const getShortArt = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
-
-  // let modifyDraft = draft.message.content;
-
-  // while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
-  //   const resizeResult = await openai.createChat({
-  //     userPrompt: `${prompt.pipelines.length} \n ${modifyDraft}`,
-  //   });
-
-  //   modifyDraft = resizeResult.message.content;
-  // }
-
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
-  //   isJson: true,
-  // });
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story: modifyDraft.story };
 };

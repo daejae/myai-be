@@ -1,5 +1,6 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
+import { getStoryTitle } from './title';
 
 export const getLongPsychology = async (
   openai: OpenaiService,
@@ -18,28 +19,13 @@ export const getLongPsychology = async (
     draft.message.content,
   );
 
-  if (result.story.length < 1000)
-    throw new Error(
-      '롱폼(심리학) 생성된 텍스트가 너무 짧음 : ' + result.story.length,
-    );
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
 
-  return result;
+  if (story.length < 1000)
+    throw new Error('롱폼(심리학) 생성된 텍스트가 너무 짧음 : ' + story.length);
 
-  // const modifyDraft = draft.message.content;
-  // if (modifyDraft.length < 1000) {
-  //   throw new Error('롱폼(심리학) 생성된 텍스트가 너무 짧음 : ' + modifyDraft.length);
-  // }
-
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${draft.message.content}`,
-  //   isJson: true,
-  // });
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story };
 };
 
 export const getShortPsychology = async (
@@ -59,6 +45,9 @@ export const getShortPsychology = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -72,5 +61,5 @@ export const getShortPsychology = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
+  return { title, story: modifyDraft.story };
 };

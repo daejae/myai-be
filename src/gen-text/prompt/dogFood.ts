@@ -1,6 +1,7 @@
 import { OpenaiService } from 'src/openai/openai.service';
 import getPrompt from './getPrompt';
 import { getNextFood } from './dogFood.const';
+import { getStoryTitle } from './title';
 
 export const getShortDogFood = async (
   openai: OpenaiService,
@@ -19,6 +20,9 @@ export const getShortDogFood = async (
     draft.message.content,
   );
 
+  const story = result.story;
+  const title = await getStoryTitle(openai, prompt.pipelines.title, story);
+
   let modifyDraft = result;
 
   while (modifyDraft.story.length > +prompt.pipelines.lengthGoal) {
@@ -32,26 +36,5 @@ export const getShortDogFood = async (
     modifyDraft = JSON.parse(resizeResult.message.content);
   }
 
-  return modifyDraft;
-
-  // let modifyDraft = draft.message.content;
-
-  // while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
-  //   const resizeResult = await openai.createChat({
-  //     userPrompt: `${prompt.pipelines.length} \n ${modifyDraft}`,
-  //   });
-
-  //   modifyDraft = resizeResult.message.content;
-  // }
-
-  // const title = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.title} \n${draft.message.content}`,
-  // });
-
-  // const resultString = await openai.createChat({
-  //   userPrompt: `${prompt.pipelines.json} \n${title.message.content}\n${modifyDraft}`,
-  //   isJson: true,
-  // });
-
-  // return JSON.parse(resultString.message.content);
+  return { title, story: modifyDraft.story };
 };

@@ -43,10 +43,7 @@ export const getShortHorror = async (
   const prompt = getPrompt(category, language);
 
   const draft = await openai.createChat({
-    // userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 매우 매우 길게 작성해줘.`,
-    // userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
     userPrompt: `400자 이내의 한국 인터넷에서 흔히 볼수 있는 공포 썰을 작성해줘.`,
-    // userPrompt: `한국 인터넷에서 흔히 볼수 있는 공포 썰을 매우매우 짧게 작성해줘.`,
     model: 'gpt-4o',
   });
 
@@ -57,14 +54,6 @@ export const getShortHorror = async (
   );
 
   const modifyDraft = draft.message.content;
-  // while (modifyDraft.length > +prompt.pipelines.lengthGoal) {
-  //   const resizeResult = await openai.createChat({
-  //     userPrompt: `${prompt.pipelines.length} \n ${modifyDraft}`,
-  //   });
-
-  //   modifyDraft = resizeResult.message.content;
-  // }
-
   const resultString = await openai.createChat({
     userPrompt: `${prompt.pipelines.json} \n${title}. \n${modifyDraft}`,
     isJson: true,
