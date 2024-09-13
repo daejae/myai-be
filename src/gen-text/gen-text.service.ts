@@ -64,7 +64,7 @@ export class GenTextService {
     const process = this.getProcess(category, isLong);
     await this.logger.logInfo(`텍스트 요청 쇼츠 // ${user.name}`);
 
-    for (let retry = 0; retry < 3; retry++) {
+    for (let retry = 0; retry < 10; retry++) {
       try {
         const result = await process(this.openai, category, language ?? 'ko');
 
@@ -87,6 +87,9 @@ export class GenTextService {
         return result;
       } catch (e) {
         console.log(e);
+        await this.logger.logInfo(
+          `텍스트 생성 에러 // retry : ${retry} /  ${e.message}`,
+        );
       }
     }
     throw new InternalServerErrorException();
