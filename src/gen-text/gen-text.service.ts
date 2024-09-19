@@ -13,6 +13,7 @@ import { getShortHoroscope } from './prompt/horoscope';
 import { getShortDogFood } from './prompt/dogFood';
 import { getLongFolktale, getShortFolktale } from './prompt/folktale';
 import { getLongScience, getShortScience } from './prompt/science';
+import { getLongPsychology_script } from './prompt/psychology_script';
 
 @Injectable()
 export class GenTextService {
@@ -46,6 +47,10 @@ export class GenTextService {
         return getShortHoroscope;
       case 'DogFood':
         return getShortDogFood;
+
+      // 임시 테스트
+      case 'Psychology-Script':
+        return getLongPsychology_script;
     }
   }
 

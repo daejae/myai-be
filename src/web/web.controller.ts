@@ -1,20 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { WebService } from './web.service';
 import { CustomAuthGuard } from 'src/common/guards/custom-auth.guard';
 import { User } from '@prisma/client';
 import { PostProjectDto } from 'src/web/dtos/post-web.dto';
 import { CreateThumbnailDto } from './dtos/create-thumbnail.dto';
 import { LoggerService } from 'src/logger/logger.service';
-import { GetGenerateText } from './dtos/get-gen-text.dto';
-import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
 
 @UseGuards(CustomAuthGuard)
 @Controller('api/web')

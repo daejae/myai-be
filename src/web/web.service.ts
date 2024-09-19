@@ -10,9 +10,7 @@ import {
   thumbnailPromptByStory,
 } from 'src/common/constants';
 import { checkValues } from 'src/common/utils';
-import { GetGenerateText } from './dtos/get-gen-text.dto';
 import { ConfigService } from '@nestjs/config';
-import { GetGenerateShortText } from './dtos/get-gen-text-short.dto';
 import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()

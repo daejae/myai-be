@@ -16,6 +16,8 @@ export class GetTextDto {
     'Trivia',
     'Folktale',
     'ScienceTest',
+
+    'Psychology-Script',
   ])
   category: string;
 
