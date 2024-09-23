@@ -39,8 +39,6 @@ export class GenTextService {
         return isLong ? getLongPsychology : getShortPsychology;
       case 'Trivia':
         return isLong ? getLongTrivia : getShortTrivia;
-      case 'Folktale':
-        return isLong ? getLongFolktale : getShortFolktale;
 
       // 숏폼 전용
       case 'Horoscope':
@@ -51,6 +49,15 @@ export class GenTextService {
       // 임시 테스트
       case 'Psychology-Script':
         return getLongPsychology_script;
+
+      case 'Folktale_KR':
+      case 'Folktale_CN':
+      case 'Folktale_JP':
+      case 'Folktale_DK':
+      case 'Folktale_DE':
+      case 'Folktale_FR':
+      case 'Folktale':
+        return isLong ? getLongFolktale : getShortFolktale;
     }
   }
 

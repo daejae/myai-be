@@ -26,13 +26,31 @@ const countries = [
   '필리핀',
 ];
 
+// 국가 코드를 국가 이름으로 매핑하는 객체
+const countryMap: { [key: string]: string } = {
+  Folktale_KR: '한국',
+  Folktale_CN: '중국',
+  Folktale_JP: '일본',
+  Folktale_DK: '덴마크',
+  Folktale_DE: '독일',
+  Folktale_FR: '프랑스',
+};
+
+// 국가 코드를 받아 국가 이름을 반환하는 함수
+function getCountryName(code: string) {
+  // 코드가 맵핑되어 있지 않으면 "Unknown Country" 반환
+  return countryMap[code] || null;
+}
+
 export const getLongFolktale = async (
   openai: OpenaiService,
   category: string,
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const country = getRandomElement(countries);
+  const country = getCountryName(category)
+    ? getCountryName(category)
+    : getRandomElement(countries);
 
   const draft = await openai.createChat({
     userPrompt: `${country}의 동화를 썰로 매우매우 길게 작성해줘. title과 story로 JSON 객체로 반환해줘.`,
@@ -61,7 +79,9 @@ export const getShortFolktale = async (
   language: string,
 ) => {
   const prompt = getPrompt(category, language);
-  const country = getRandomElement(countries);
+  const country = getCountryName(category)
+    ? getCountryName(category)
+    : getRandomElement(countries);
 
   const draft = await openai.createChat({
     userPrompt: `${country}의 동화를 썰로 매우매우 길게 작성해줘. title과 story로 JSON 객체로 반환해줘.`,

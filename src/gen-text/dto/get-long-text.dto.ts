@@ -18,6 +18,13 @@ export class GetTextDto {
     'ScienceTest',
 
     'Psychology-Script',
+
+    'Folktale_KR',
+    'Folktale_CN',
+    'Folktale_JP',
+    'Folktale_DK',
+    'Folktale_DE',
+    'Folktale_FR',
   ])
   category: string;
 
@@ -28,4 +35,8 @@ export class GetTextDto {
   @IsOptional()
   @IsNumberString()
   length: number;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
 }
