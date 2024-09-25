@@ -38,8 +38,16 @@ export class GenTextController {
           isLong: true,
         }),
       );
-      if (result.reduce((sum, current) => sum + current.story.length, 0) > 6000)
-        break;
+
+      const totalLenght = result.reduce(
+        (sum, current) => sum + current.story.length,
+        0,
+      );
+
+      if (totalLenght > 5000 && totalLenght < 7000) break;
+      else if (totalLenght > 5000) {
+        result.length = 0;
+      }
     }
 
     return result;
