@@ -213,20 +213,23 @@ export class OpenaiService {
       );
 
       result.positive =
-        '(best quality, masterpiece, 4K, raytracing), ' +
+        '(sfw:1.3, best quality, masterpiece, 4K, raytracing), ' +
         appendPositive +
         result.positive;
+
+      // (nsfw, nudity, naked, porn, erotic, sexual, suggestive, explicit content, cleavage, nipples, genitalia, breasts, lingerie, fetish, bikini, underwear, bare skin, revealing clothes, sexually suggestive, lewd, obscene, bad anatomy, low quality, worst quality, bad hands, extra limbs, deformed)
       result.negative =
-        '(bad quality, worst quality:1.4, bad hands, nsfw, nudity, naked, porn, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ' +
+        '(bad quality, worst quality:1.4, bad hands, nsfw:2, nudity, naked:2, porn:2, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ' +
         result.negative;
 
       return result;
     } catch (error) {
       return {
         positive:
-          '(best quality, masterpiece, 4K, raytracing), ' + appendPositive,
+          '(sfw:1.3, best quality, masterpiece, 4K, raytracing), ' +
+          appendPositive,
         negative:
-          '(bad quality, worst quality:1.4, bad hands, nsfw, nudity, naked, porn, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ',
+          '(bad quality, worst quality:1.4, bad hands, nsfw:2, nudity, naked:2, porn:2, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ',
         keyword: '',
       };
     }
