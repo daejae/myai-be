@@ -213,7 +213,7 @@ export class OpenaiService {
       );
 
       result.positive =
-        '(sfw:1.3, best quality, masterpiece, 4K, raytracing), ' +
+        '(sfw:1.3, best quality, masterpiece, 4k resolution, raytracing), ' +
         appendPositive +
         result.positive;
 
@@ -226,7 +226,7 @@ export class OpenaiService {
     } catch (error) {
       return {
         positive:
-          '(sfw:1.3, best quality, masterpiece, 4K, raytracing), ' +
+          '(sfw:1.3, best quality, masterpiece, 4k resolution, raytracing), beautiful woman' +
           appendPositive,
         negative:
           '(bad quality, worst quality:1.4, bad hands, nsfw:2, nudity, naked:2, porn:2, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ',
