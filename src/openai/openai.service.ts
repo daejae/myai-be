@@ -213,20 +213,20 @@ export class OpenaiService {
       );
 
       result.positive =
-        'best quality, masterpiece, 4K, raytracing, ' +
+        '(best quality, masterpiece, 4K, raytracing), ' +
         appendPositive +
         result.positive;
       result.negative =
-        '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers, ' +
+        '(bad quality, worst quality:1.4, bad hands), nsfw, nudity, naked, porn, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ' +
         result.negative;
 
       return result;
     } catch (error) {
       return {
         positive:
-          'best quality, masterpiece, 4K, raytracing, ' + appendPositive,
+          '(best quality, masterpiece, 4K, raytracing), ' + appendPositive,
         negative:
-          '(bad quality, worst quality:1.4, bad hands),More than 5 toes on one foot, hand with more than 5 fingers',
+          '(bad quality, worst quality:1.4, bad hands, nsfw, nudity, naked, porn, erotic, sexual), More than 5 toes on one foot, hand with more than 5 fingers, ',
         keyword: '',
       };
     }
