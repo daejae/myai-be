@@ -25,6 +25,8 @@ export class GetTextDto {
     'Folktale_DK',
     'Folktale_DE',
     'Folktale_FR',
+
+    'korea-myths',
   ])
   category: string;
 

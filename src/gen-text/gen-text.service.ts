@@ -14,6 +14,7 @@ import { getShortDogFood } from './prompt/dogFood';
 import { getLongFolktale, getShortFolktale } from './prompt/folktale';
 import { getLongScience, getShortScience } from './prompt/science';
 import { getLongPsychology_script } from './prompt/psychology_script';
+import { getLongKoreaMyths, getShortKoreaMyths } from './prompt/korea-myths';
 
 @Injectable()
 export class GenTextService {
@@ -58,6 +59,9 @@ export class GenTextService {
       case 'Folktale_FR':
       case 'Folktale':
         return isLong ? getLongFolktale : getShortFolktale;
+
+      case 'korea-myths':
+        return isLong ? getLongKoreaMyths : getShortKoreaMyths;
     }
   }
 
