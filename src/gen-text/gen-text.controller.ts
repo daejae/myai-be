@@ -44,7 +44,7 @@ export class GenTextController {
         0,
       );
 
-      if (totalLenght > 5000 && totalLenght < 7000) break;
+      if (totalLenght > 5000 && totalLenght < 6500) break;
       else if (totalLenght > 5000) {
         result.length = 0;
       }
