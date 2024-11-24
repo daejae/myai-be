@@ -15,6 +15,7 @@ import { getLongFolktale, getShortFolktale } from './prompt/folktale';
 import { getLongScience, getShortScience } from './prompt/science';
 import { getLongPsychology_script } from './prompt/psychology_script';
 import { getLongKoreaMyths, getShortKoreaMyths } from './prompt/korea-myths';
+import { getLongHealth, getShortHealth } from './prompt/health';
 
 @Injectable()
 export class GenTextService {
@@ -40,6 +41,8 @@ export class GenTextService {
         return isLong ? getLongPsychology : getShortPsychology;
       case 'Trivia':
         return isLong ? getLongTrivia : getShortTrivia;
+      case 'Health':
+        return isLong ? getLongHealth : getShortHealth;
 
       // 숏폼 전용
       case 'Horoscope':

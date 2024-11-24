@@ -16,7 +16,7 @@ export class GetTextDto {
     'Trivia',
     'Folktale',
     'ScienceTest',
-
+    'Health',
     'Psychology-Script',
 
     'Folktale_KR',

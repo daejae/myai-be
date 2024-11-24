@@ -18,6 +18,7 @@ export class GetShortTextDto {
     'Folktale',
     'DogFood',
     'ScienceTest',
+    'Health',
 
     'Folktale_KR',
     'Folktale_CN',

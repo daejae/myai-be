@@ -258,4 +258,8 @@ export class OpenaiService {
     const result = completion.choices[0];
     return result;
   }
+
+  getClient() {
+    return this.openai;
+  }
 }
